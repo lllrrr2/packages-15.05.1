@@ -1,0 +1,13 @@
+--- a/netutils.c
++++ b/netutils.c
+@@ -29,6 +29,10 @@
+ #define IPV6_RECVORIGDSTADDR 74
+ #endif
+ 
++#ifndef IP_TRANSPARENT
++#define IP_TRANSPARENT 19
++#endif
++
+ #define KEEPALIVE_CONN_IDLE_SEC 15
+ #define KEEPALIVE_RETRY_MAX_COUNT 5
+ #define KEEPALIVE_RETRY_INTERVAL_SEC 1
