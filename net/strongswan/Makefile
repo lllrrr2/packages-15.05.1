@@ -113,7 +113,7 @@ endef
 
 define Package/strongswan
 $(call Package/strongswan/Default)
-  DEPENDS:= +libpthread +ip \
+  DEPENDS:= +libpthread +ip-full \
 	+kmod-crypto-authenc \
 	+kmod-ipsec +kmod-ipsec4 +IPV6:kmod-ipsec6 \
 	+kmod-ipt-ipsec +iptables-mod-ipsec
