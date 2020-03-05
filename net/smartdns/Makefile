@@ -20,8 +20,8 @@ PKG_NAME:=smartdns
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/pymumu/smartdns.git
 
-PKG_REV:=3ad7cd7f454eec2fbdf338c0eb0541da301f1e73
-PKG_VERSION:=1.2020.02.27
+PKG_REV:=c824c0abc5eabbc75d5bf3ecbb5432441527fd12
+PKG_VERSION:=1.2020.03.02
 PKG_RELEASE:=1
 PKG_LICENSE:=GPL-3.0
 
