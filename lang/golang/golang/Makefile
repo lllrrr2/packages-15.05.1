@@ -18,7 +18,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
 
 PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
 PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
-PKG_MD5SUM:=cb6f594d22dd79af4fff9779607b1b47
+PKG_MD5SUM:=426db7a2b2a06f82cc0ac4818eb4f25e
 
 PKG_LICENSE:=BSD-3-Clause
 PKG_LICENSE_FILES:=LICENSE
@@ -110,7 +110,7 @@ endef
 define Package/golang
 $(call Package/golang/Default)
   TITLE+= (compiler)
-  DEPENDS+= +golang-src +libpthread
+  DEPENDS+= +golang-src
 endef
 
 define Package/golang/description
