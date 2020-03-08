@@ -57,7 +57,7 @@ HOST_GO_VALID_OS_ARCH:= \
 
 BOOTSTRAP_SOURCE:=go1.4-bootstrap-20171003.tar.gz
 BOOTSTRAP_SOURCE_URL:=$(GO_SOURCE_URLS)
-BOOTSTRAP_HASH:=f4ff5b5eb3a3cae1c993723f3eab519c5bae18866b5e5f96fe1102f0cb5c3e52
+BOOTSTRAP_MD5SUM:=dbf727a4b0e365bf88d97cbfde590016
 
 BOOTSTRAP_BUILD_DIR:=$(HOST_BUILD_DIR)/.go_bootstrap
 
@@ -146,7 +146,7 @@ endef
 define Download/golang-bootstrap
   FILE:=$(BOOTSTRAP_SOURCE)
   URL:=$(BOOTSTRAP_SOURCE_URL)
-  HASH:=$(BOOTSTRAP_HASH)
+  MD5SUM:=$(BOOTSTRAP_MD5SUM)
 endef
 $(eval $(call Download,golang-bootstrap))
 
