@@ -10,31 +10,30 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=cryptodev-linux
-PKG_VERSION:=1.7
-PKG_RELEASE:=2
+PKG_VERSION:=1.10
+PKG_RELEASE:=1
 
+PKG_SOURCE_URL:=https://codeload.github.com/$(PKG_NAME)/$(PKG_NAME)/tar.gz/$(PKG_NAME)-$(PKG_VERSION)?
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://download.gna.org/cryptodev-linux/
-PKG_MD5SUM:=0b63b3481cf2c90386b35f057481d36b
+PKG_MD5SUM:=53403fbb99cd88a48bc899dbe9158e1c
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILES:=COPYING
 
-PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_MAINTAINER:=Ansuel Smith <ansuelsmth@gmail.com>
+
+PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_NAME)-$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
-CRYPTODEV_AUTOLOAD:= \
-	cryptodev
-
 define KernelPackage/cryptodev
   SUBMENU:=Cryptographic API modules
-  DEFAULT:=m if ALL
   TITLE:=Driver for cryptographic acceleration
   URL:=http://cryptodev-linux.org/
-  MAINTAINER:=Nikos Mavrogiannopoulos <n.mavrogiannopoulos@gmail.com>
   VERSION:=$(LINUX_VERSION)+$(PKG_VERSION)-$(BOARD)-$(PKG_RELEASE)
   DEPENDS:=+kmod-crypto-core +kmod-crypto-authenc +kmod-crypto-hash
-  FILES:= \
-		$(PKG_BUILD_DIR)/cryptodev.$(LINUX_KMOD_SUFFIX)
-  AUTOLOAD:=$(call AutoLoad,50,$(CRYPTODEV_AUTOLOAD))
+  FILES:=$(PKG_BUILD_DIR)/cryptodev.$(LINUX_KMOD_SUFFIX)
+  AUTOLOAD:=$(call AutoLoad,50,cryptodev)
+  MODPARAMS.cryptodev:=cryptodev_verbosity=-1
 endef
 
 define KernelPackage/cryptodev/description
@@ -42,34 +41,20 @@ define KernelPackage/cryptodev/description
   hardware ciphers by user-space applications.
 endef
 
-CRYPTODEV_MAKEOPTS= -C $(PKG_BUILD_DIR) \
-		PATH="$(TARGET_PATH)" \
-		ARCH="$(LINUX_KARCH)" \
-		CROSS_COMPILE="$(TARGET_CROSS)" \
-		TOOLPREFIX="$(KERNEL_CROSS)" \
-		TOOLPATH="$(KERNEL_CROSS)" \
-		KERNEL_DIR="$(LINUX_DIR)" \
-		LDOPTS=" " \
-		DOMULTI=1
-
-define Build/Compile/cryptodev
-	$(MAKE) $(CRYPTODEV_MAKEOPTS)
+define Build/Configure
 endef
 
 define Build/Compile
-	$(call Build/Compile/cryptodev)
+	$(MAKE) -C $(PKG_BUILD_DIR) \
+		ARCH="$(LINUX_KARCH)" \
+		CROSS_COMPILE="$(TARGET_CROSS)" \
+		$(KERNEL_MAKE_FLAGS) \
+		KERNEL_DIR="$(LINUX_DIR)"
 endef
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(STAGING_DIR)/usr/include/crypto
 	$(CP) $(PKG_BUILD_DIR)/crypto/cryptodev.h $(STAGING_DIR)/usr/include/crypto/
-endef
-
-define KernelPackage/cryptodev/install
-	$(INSTALL_DIR) $(1)/etc/modules.d
-	$(INSTALL_DATA) ./files/cryptodev.modules $(1)/etc/modules.d/80-cryptodev
-	$(INSTALL_DIR) $(1)/lib/modules/$(LINUX_VERSION)
-	$(INSTALL_DIR) $(1)/usr/sbin
 endef
 
 $(eval $(call KernelPackage,cryptodev))
