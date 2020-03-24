@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=trojan
-PKG_VERSION:=1.14.0
+PKG_VERSION:=1.15.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/trojan-gfw/trojan.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=18763b7529963efef8dcb01f50389a6f49213ae1
+PKG_SOURCE_VERSION:=26637b32213fbd508c85d7f8fbfcf593f8330ae3
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
 CMAKE_INSTALL:=1
@@ -54,7 +54,7 @@ define Package/trojan
 	CATEGORY:=Network
 	TITLE:=An unidentifiable mechanism that helps you bypass GFW
 	URL:=https://github.com/trojan-gfw/trojan
-	DEPENDS:=+libpthread +libstdcpp +libopenssl \
+	DEPENDS:=+libpthread +libstdcpp +libopenssl @!TARGET_kirkwood \
 		+boost +boost-system +boost-program_options +boost-date_time
 endef
 
