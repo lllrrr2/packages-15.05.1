@@ -3,7 +3,6 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=oaf
-PKG_RELEASE:=3
 
 include $(INCLUDE_DIR)/package.mk
 
