@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009-2015 OpenWrt.org
+# Copyright (C) 2009-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,10 +8,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gst1-plugins-ugly
-PKG_VERSION:=1.4.5
+PKG_VERSION:=1.12.4
 PKG_RELEASE:=1
 
-PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
+PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org> \
+		Ted Hess <thess@kitschensync.net>
 
 PKG_LICENSE:=LGPLv2
 PKG_LICENSE_FILES:=COPYING
@@ -19,13 +20,12 @@ PKG_LICENSE_FILES:=COPYING
 PKG_BUILD_DIR:=$(BUILD_DIR)/gst-plugins-ugly-$(PKG_VERSION)
 PKG_SOURCE:=gst-plugins-ugly-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://gstreamer.freedesktop.org/src/gst-plugins-ugly/
-PKG_MD5SUM:=6954beed7bb9a93e426dee543ff46393
+PKG_MD5SUM:=e2b836fb2747f6ae3a1a6f33a9d8c952
 
-PKG_BUILD_DEPENDS:= libgstreamer1 gstreamer1-plugins-base
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_gst1-mod-asf \
 	CONFIG_PACKAGE_gst1-mod-lame \
-	CONFIG_PACKAGE_gst1-mod-mad \
+	CONFIG_PACKAGE_gst1-mod-mpg123 \
 	CONFIG_PACKAGE_gst1-mod-mpeg2dec \
 
 PKG_FIXUP:=autoreconf
@@ -109,7 +109,7 @@ CONFIGURE_ARGS += \
 	--disable-dvdsub \
 	--disable-iec958 \
 	$(call GST_COND_SELECT,lame) \
-	$(call GST_COND_SELECT,mad) \
+	$(call GST_COND_SELECT,mpg123) \
 	$(call GST_COND_SELECT,mpeg2dec) \
 	--disable-mpegaudioparse \
 	--disable-mpegstream \
@@ -167,9 +167,9 @@ define GstBuildPlugin
   $$(eval $$(call BuildPackage,gst1-mod-$(1)))
 endef
 
-$(eval $(call GstBuildPlugin,asf,ASF demuxer,audio riff rtp rtsp sdp tag,,))
+$(eval $(call GstBuildPlugin,asf,ASF demuxer,audio video riff rtp rtsp sdp tag,,))
 $(eval $(call GstBuildPlugin,lame,MP3 encoder (using LAME),audio,,+lame-lib))
-$(eval $(call GstBuildPlugin,mad,MP3 decoder (using MAD),audio tag,,+libid3tag +libmad))
+$(eval $(call GstBuildPlugin,mpg123,MP3 decoder (using mpg123),audio tag,,+libid3tag +mpg123))
 $(eval $(call GstBuildPlugin,mpeg2dec,MPEG decoder,video,,+libmpeg2))
 
 $(eval $(call BuildPackage,gstreamer1-plugins-ugly))
