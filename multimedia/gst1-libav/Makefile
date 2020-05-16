@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2006-2015 OpenWrt.org
+# Copyright (C) 2006-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,14 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gst1-libav
-PKG_VERSION:=1.4.5
+PKG_VERSION:=1.12.4
 PKG_RELEASE:=1
 
-PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org>
+PKG_MAINTAINER:=W. Michael Petullo <mike@flyn.org> \
+		Ted Hess <thess@kitschensync.net>
 
 PKG_SOURCE:=gst-libav-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=http://gstreamer.freedesktop.org/src/gst-libav
-PKG_MD5SUM:=f4922a46adbcbe7bd01331ff5dc7979d
+PKG_MD5SUM:=8a851bf2e475e90a3fdac9506e3e4dbd
 
 PKG_LICENSE:=GPL-2.0 LGPL-2.0
 PKG_LICENSE_FILES:=COPYING COPYING.LIB
@@ -53,7 +54,6 @@ LIBAV_DECODERS:= \
 	mpeg1video \
 	mpeg2video \
 	mpeg4 \
-	mpeg4aac \
 	mpegvideo \
 	pcm_s16be \
 	pcm_s16le \
@@ -109,8 +109,6 @@ PKG_CONFIG_DEPENDS:= \
 	$(patsubst %,CONFIG_GST1_LIBAV_PARSER_%,$(LIBAV_PARSERS)) \
 	$(patsubst %,CONFIG_GST1_LIBAV_PROTOCOL_%,$(LIBAV_PROTOCOLS))
 
-PKG_BUILD_DEPENDS:= libgstreamer1 gstreamer1-plugins-base
-
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
 
@@ -121,7 +119,7 @@ define Package/gst1-libav
   URL:=http://www.gstreamer.net/modules/gst-libav.html
   DEPENDS:= +libgstreamer1 +gstreamer1-plugins-base \
 	    +gst1-mod-alsa +libgst1audio +libgst1pbutils +libgst1video \
-	    +libbz2
+	    +libbz2 +liblzma
 endef
 
 define Package/gst1-libav/description
@@ -144,9 +142,13 @@ LIBAV_CONFIGURE_DEMUXERS:=$(call FILTER_CONFIG,DEMUXER,demuxer,$(LIBAV_DEMUXERS)
 LIBAV_CONFIGURE_PARSERS:=$(call FILTER_CONFIG,PARSER,parser,$(LIBAV_PARSERS))
 LIBAV_CONFIGURE_PROTOCOLS:=$(call FILTER_CONFIG,PROTOCOL,protocol,$(LIBAV_PROTOCOLS))
 
+# Strip off FPU notation
+REAL_CPU_TYPE:=$(firstword $(subst +, ,$(CONFIG_CPU_TYPE)))
+
 CONFIGURE_ARGS += \
 	--without-system-libav \
-	--with-libav-extra-configure="--target-os=linux \
+	--with-libav-extra-configure=" \
+	$(if $(REAL_CPU_TYPE),--cpu=$(call qstrip,$(REAL_CPU_TYPE)),) \
 	--disable-bsfs \
 	--disable-programs \
 	--disable-devices \
@@ -179,20 +181,12 @@ CONFIGURE_ARGS += \
 	--disable-fma3 \
 	--disable-fma4 \
 	--disable-avx2 \
-	--disable-vfp \
-	--disable-neon \
 	--disable-inline-asm \
 	--disable-yasm"
 
-# XXX: trick to force use of embedded Libav headers
-TARGET_CFLAGS += $(TARGET_CPPFLAGS)
-TARGET_CPPFLAGS :=
+TARGET_CFLAGS += -D_GNU_SOURCE
 
 TARGET_LDFLAGS += $(FPIC)
-
-define Build/Prepare
-$(call Build/Prepare/Default)
-endef
 
 define Package/gst1-libav/install
 	$(INSTALL_DIR) $(1)/usr/lib/gstreamer-$(GST_VERSION)
