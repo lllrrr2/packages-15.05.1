@@ -91,6 +91,9 @@ define Package/gstreamer1-plugins-good/config
 
 endef
 
+TARGET_CPPFLAGS:= \
+	-D_GNU_SOURCE
+
 GST_COND_SELECT = $(patsubst %,$(if $(CONFIG_PACKAGE_gst1-mod-$(1)),--enable,--disable)-%,$(1))
 
 GST_VERSION:=1.0
