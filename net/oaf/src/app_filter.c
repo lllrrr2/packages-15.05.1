@@ -813,6 +813,7 @@ static u_int32_t app_filter_hook(unsigned int hook,
 	}
 #endif
 
+#if 0
 // 3.12.74-->3.13-rc1
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
 	struct nf_conn_acct *acct;
@@ -837,6 +838,7 @@ static u_int32_t app_filter_hook(unsigned int hook,
 		return NF_ACCEPT;
 	}
 
+#endif
 	memset((char *)&flow, 0x0, sizeof(flow_info_t));
 	parse_flow_base(skb, &flow);
 	parse_http_proto(&flow);
