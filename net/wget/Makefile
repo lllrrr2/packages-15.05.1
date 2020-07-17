@@ -8,15 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=wget
-PKG_VERSION:=1.19.5
-PKG_RELEASE:=1
+PKG_VERSION:=1.20.3
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@GNU/$(PKG_NAME)
-PKG_MD5SUM:=2db6f03d655041f82eb64b8c8a1fa7da
+PKG_MD5SUM:=db4e6dc7977cbddcd543b240079a4899
 PKG_MAINTAINER:=Peter Wagner <tripolar@gmx.at>
-PKG_LICENSE:=GPL-3.0+
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
+
+PKG_CPE_ID:=cpe:/a:gnu:wget
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -28,7 +30,7 @@ define Package/wget/Default
   DEPENDS:=+libpcre +zlib
   SUBMENU:=File Transfer
   TITLE:=Non-interactive network downloader
-  URL:=http://www.gnu.org/software/wget/index.html
+  URL:=https://www.gnu.org/software/wget/index.html
 endef
 
 define Package/wget/Default/description
@@ -66,8 +68,10 @@ endef
 CONFIGURE_ARGS+= \
 	--disable-rpath \
 	--disable-iri \
+	--disable-pcre2 \
 	--with-included-libunistring \
-	--without-libuuid
+	--without-libuuid \
+	--without-libpsl
 
 CONFIGURE_VARS += \
 	ac_cv_header_uuid_uuid_h=no
@@ -76,6 +80,9 @@ ifeq ($(BUILD_VARIANT),ssl)
 	CONFIGURE_ARGS+= \
 		--with-ssl=openssl \
 		--with-libssl-prefix="$(STAGING_DIR)/usr"
+
+	CONFIGURE_VARS += \
+		ac_cv_libssl=yes
 endif
 
 ifeq ($(BUILD_VARIANT),nossl)
