@@ -7,7 +7,7 @@
 
 include $(TOPDIR)/rules.mk
 
-GO_VERSION_MAJOR_MINOR:=1.14
+GO_VERSION_MAJOR_MINOR:=1.15
 GO_VERSION_PATCH:=
 
 PKG_NAME:=golang
@@ -20,7 +20,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
 
 PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
 PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
-PKG_MD5SUM:=7c97bdb3b5218a5089612efb3ed30345
+PKG_MD5SUM:=8134209ae3b352e2ba6d6f2edd3b3c05
 
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
