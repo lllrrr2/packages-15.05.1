@@ -11,14 +11,15 @@ PKG_NAME:=youtube-dl
 PKG_VERSION:=2020.9.20
 PKG_RELEASE:=1
 
-PYPI_NAME:=youtube_dl
+PKG_SOURCE:=youtube_dl-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/y/youtube_dl/
+PKG_MD5SUM:=c7df2f01e67898078fa774df106a3a4e
+PKG_BUILD_DIR:=$(BUILD_DIR)/youtube_dl-$(PKG_VERSION)
 
-
-PKG_MAINTAINER:=Josef Schlehofer <pepe.schlehofer@gmail.com>
+PKG_MAINTAINER:=Adrian Panella <ianchi74@outlook.com>, Josef Schlehofer <pepe.schlehofer@gmail.com>
 PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
 
-include ../../lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include ../../lang/python/python3-package.mk
 
@@ -35,6 +36,7 @@ define Package/youtube-dl
     +python3-codecs \
     +python3-ctypes \
     +python3-setuptools
+  VARIANT:=python3
 endef
 
 define Package/youtube-dl/description
