@@ -28,7 +28,7 @@ SUPPORTED_KERNELS:=LINUX_3_8||LINUX_3_10||LINUX_3_13||LINUX_3_14||LINUX_3_18||LI
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/kernel.mk
-$(call include_mk, python-package.mk)
+$(call include_mk, python3-package.mk)
 
 PKG_FIXUP=libtool
 
@@ -62,7 +62,7 @@ endef
 define Package/openvswitch-python
   $(call Package/openvswitch/Default)
   TITLE:=Open vSwitch Python Support
-  DEPENDS:=@PACKAGE_openvswitch +PACKAGE_openvswitch:openvswitch +python
+  DEPENDS:=@PACKAGE_openvswitch +PACKAGE_openvswitch:openvswitch +python3
 endef
 
 define Package/openvswitch-python/description
