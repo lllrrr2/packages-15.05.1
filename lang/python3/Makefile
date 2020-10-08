@@ -14,12 +14,12 @@ PYTHON_VERSION:=$(PYTHON3_VERSION)
 PYTHON_VERSION_MICRO:=$(PYTHON3_VERSION_MICRO)
 
 PKG_NAME:=python3
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 PKG_VERSION:=$(PYTHON_VERSION).$(PYTHON_VERSION_MICRO)
 
 PKG_SOURCE:=Python-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.python.org/ftp/python/$(PKG_VERSION)
-PKG_MD5SUM:=c08fbee72ad5c2c95b0f4e44bf6fd72c
+PKG_MD5SUM:=e9d6ebc92183a177b8e8a58cad5b8d67
 
 PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>, Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=Python/2.0
@@ -82,7 +82,7 @@ endef
 define Package/python3-light
 $(call Package/python3/Default)
   TITLE:=Python $(PYTHON_VERSION) light installation
-  DEPENDS:=+python3-base +libffi +libbz2 +PYTHON3_BLUETOOTH_SUPPORT:bluez-libs +libuuid
+  DEPENDS:=+python3-base +libffi +libbz2 +PYTHON3_BLUETOOTH_SUPPORT:bluez-libs +libuuid +librt
 endef
 
 define Package/python3-light/config
@@ -129,8 +129,7 @@ endef
 
 MAKE_FLAGS+=\
 	CROSS_COMPILE=yes \
-	LD="$(TARGET_CC)" \
-	PGEN=pgen3
+	LD="$(TARGET_CC)"
 
 EXTRA_CFLAGS+= \
 	-DNDEBUG -fno-inline
@@ -322,7 +321,7 @@ define Host/Configure
 endef
 
 define Host/Compile
-	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python Parser/pgen
+	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) python
 	+$(HOST_MAKE_VARS) $(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) sharedmods
 endef
 
@@ -344,8 +343,6 @@ define Host/Install
 			$(HOST_PYTHON3_PKG_DIR)/.pip_installed_*
 	)
 	$(MAKE) -C $(HOST_BUILD_DIR) install
-	$(INSTALL_DIR) $(HOST_PYTHON3_DIR)/bin/
-	$(INSTALL_BIN) $(HOST_BUILD_DIR)/Parser/pgen $(HOST_PYTHON3_DIR)/bin/pgen3
 	$(if $(wildcard $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)),,
 		$(call HostPatchDir,$(HOST_PYTHON3_PKG_DIR),./patches-setuptools,)
 		touch $(HOST_PYTHON3_PKG_DIR)/.setuptools_installed_$(PYTHON3_SETUPTOOLS_VERSION)-$(PYTHON3_SETUPTOOLS_PKG_RELEASE)
