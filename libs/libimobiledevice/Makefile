@@ -27,7 +27,7 @@ PKG_INSTALL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/nls.mk
-include ../../lang/python/python-package.mk
+include ../../lang/python/files/python-package.mk
 
 define Package/libimobiledevice/Default
   TITLE:=A library that talks to Apple devices.
