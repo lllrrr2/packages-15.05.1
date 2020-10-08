@@ -21,7 +21,7 @@ PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/python3/files/python3-package.mk
+include ../../lang/python3/python3-package.mk
 
 define Package/youtube-dl
   SECTION:=multimedia
@@ -47,3 +47,4 @@ endef
 
 $(eval $(call Py3Package,youtube-dl))
 $(eval $(call BuildPackage,youtube-dl))
+$(eval $(call BuildPackage,youtube-dl-src))

@@ -5,11 +5,15 @@
 # See /LICENSE for more information.
 #
 
+# Note: include this after `include $(TOPDIR)/rules.mk in your package Makefile
+#       if `python3-package.mk` is included, this will already be included
+
 ifneq ($(__python3_host_mk_inc),1)
 __python3_host_mk_inc=1
 
 # For PYTHON3_VERSION
-$(call include_mk, python3-version.mk)
+python3_mk_path:=$(dir $(lastword $(MAKEFILE_LIST)))
+include $(python3_mk_path)python3-version.mk
 
 HOST_PYTHON3_DIR:=$(STAGING_DIR_HOSTPKG)
 HOST_PYTHON3_INC_DIR:=$(HOST_PYTHON3_DIR)/include/python$(PYTHON3_VERSION)
@@ -37,21 +41,26 @@ define HostPython3
 	$(HOST_PYTHON3_BIN) $(2);
 endef
 
+define host_python3_settings
+	ARCH="$(HOST_ARCH)" \
+	CC="$(HOSTCC)" \
+	CCSHARED="$(HOSTCC) $(HOST_FPIC)" \
+	CXX="$(HOSTCXX)" \
+	LD="$(HOSTCC)" \
+	LDSHARED="$(HOSTCC) -shared" \
+	CFLAGS="$(HOST_CFLAGS)" \
+	CPPFLAGS="$(HOST_CPPFLAGS) -I$(HOST_PYTHON3_INC_DIR)" \
+	LDFLAGS="$(HOST_LDFLAGS) -lpython$(PYTHON3_VERSION) -Wl$(comma)-rpath=$(STAGING_DIR_HOSTPKG)/lib" \
+	_PYTHON_HOST_PLATFORM=linux2
+endef
+
 # $(1) => commands to execute before running pythons script
 # $(2) => python script and its arguments
 # $(3) => additional variables
 define Build/Compile/HostPy3RunHost
 	$(call HostPython3, \
 		$(if $(1),$(1);) \
-		CC="$(HOSTCC)" \
-		CCSHARED="$(HOSTCC) $(HOST_FPIC)" \
-		CXX="$(HOSTCXX)" \
-		LD="$(HOSTCC)" \
-		LDSHARED="$(HOSTCC) -shared" \
-		CFLAGS="$(HOST_CFLAGS)" \
-		CPPFLAGS="$(HOST_CPPFLAGS) -I$(HOST_PYTHON3_INC_DIR)" \
-		LDFLAGS="$(HOST_LDFLAGS) -lpython$(PYTHON3_VERSION) -Wl$(comma)-rpath=$(STAGING_DIR_HOSTPKG)/lib" \
-		_PYTHON_HOST_PLATFORM=linux2 \
+		$(call host_python3_settings) \
 		$(3) \
 		, \
 		$(2) \
@@ -60,6 +69,18 @@ define Build/Compile/HostPy3RunHost
 	)
 endef
 
+# Note: I shamelessly copied this from Yousong's logic (from python-packages);
+HOST_PYTHON3_PIP:=$(STAGING_DIR_HOSTPKG)/bin/pip$(PYTHON3_VERSION)
+
+# $(1) => packages to install
+define Build/Compile/HostPy3PipInstall
+	$(call host_python3_settings) \
+	$(HOST_PYTHON3_PIP) \
+		--disable-pip-version-check \
+		--cache-dir "$(DL_DIR)/pip-cache" \
+		install \
+		$(1)
+endef
 
 # $(1) => build subdir
 # $(2) => additional arguments to setup.py
@@ -70,21 +91,5 @@ define Build/Compile/HostPy3Mod
 		./setup.py $(2), \
 		$(3))
 endef
-
-define HostPy3/Compile/Default
-	$(call Build/Compile/HostPy3Mod,,\
-		install --root="$(STAGING_DIR_HOSTPKG)" --prefix="" \
-		--single-version-externally-managed \
-	)
-endef
-
-ifeq ($(BUILD_VARIANT),python3)
-define Host/Compile
-	$(call HostPy3/Compile/Default)
-endef
-
-define Host/Install
-endef
-endif # python3
 
 endif # __python3_host_mk_inc
