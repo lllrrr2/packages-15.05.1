@@ -54,7 +54,7 @@ define Package/trojan
 	CATEGORY:=Network
 	TITLE:=An unidentifiable mechanism that helps you bypass GFW
 	URL:=https://github.com/trojan-gfw/trojan
-	DEPENDS:=+libpthread +libstdcpp +libopenssl @!TARGET_kirkwood \
+	DEPENDS:=+libpthread +libstdcpp +libopenssl \
 		+boost +boost-system +boost-program_options +boost-date_time
 endef
 

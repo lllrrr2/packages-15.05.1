@@ -1,3 +1,28 @@
+From 95d82acc57bb7d8bae431f7a6ce0707aac3ef33f Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Thu, 5 Sep 2019 19:41:13 -0700
+Subject: [PATCH] Use eventfd() function with uClibc
+
+The Boost eventfd code either directly makes the eventfd system call
+using __NR_eventfd (when __GLIBC_MINOR is less than 8), or otherwise
+uses the eventfd() function provided by the C library.
+
+However, since uClibc pretends to be glibc 2.2, the Boost eventfd code
+directly uses the system call. While it works fine on most
+architectures, it doesn't on ARC since __NR_eventfd is not defined on
+this architecture. However, eventfd() is properly implemented.
+
+So, this patch adjusts the logic used by Boost to consider uClibc as a
+C library providing the eventfd() function.
+
+Signed-off-by: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ a/boost/asio/detail/impl/eventfd_select_interrupter.ipp  | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/boost/asio/detail/impl/eventfd_select_interrupter.ipp b/boost/asio/detail/impl/eventfd_select_interrupter.ipp
+index 38d4b2a61..e16cc8b00 100644
 --- a/boost/asio/detail/impl/eventfd_select_interrupter.ipp
 +++ b/boost/asio/detail/impl/eventfd_select_interrupter.ipp
 @@ -23,11 +23,11 @@

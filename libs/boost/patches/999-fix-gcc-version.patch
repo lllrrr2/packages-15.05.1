@@ -1,0 +1,17 @@
+--- a/tools/build/src/tools/common.jam
++++ b/tools/build/src/tools/common.jam
+@@ -974,10 +974,10 @@
+     }
+ 
+     # From GCC 5, versioning changes and minor becomes patch
+-    if $(tag) = gcc && [ numbers.less 4 $(version[1]) ]
+-    {
+-        version = $(version[1]) ;
+-    }
++#    if $(tag) = gcc && [ numbers.less 4 $(version[1]) ]
++#    {
++#        version = $(version[1]) ;
++#    }
+ 
+     # Ditto, from Clang 4
+     if ( $(tag) = clang || $(tag) = clangw ) && [ numbers.less 3 $(version[1]) ]
