@@ -26,7 +26,7 @@ define Package/scapy
   TITLE:=Interactive packet manipulation tool and network scanner
   MAINTAINER:=W. Michael Petullo <mike@flyn.org>
   URL:=https://scapy.net/
-  DEPENDS:=+python3
+  DEPENDS:=+python3 +python3-pkg-resources
 endef
 
 define Package/scapy/description
