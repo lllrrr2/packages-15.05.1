@@ -71,7 +71,7 @@ endef
 define Package/python3-base
 $(call Package/python3/Default)
   TITLE:=Python $(PYTHON_VERSION) interpreter
-  DEPENDS:=+libpthread +zlib
+  DEPENDS:=+libpthread +zlib +libncursesw
 endef
 
 define Package/python3-base/description
@@ -318,6 +318,19 @@ HOST_CONFIGURE_ARGS+= \
 define Host/Configure
 	$(SED) 's/^ENABLE_USER_SITE = None$$$$/ENABLE_USER_SITE = False/' $(HOST_BUILD_DIR)/Lib/site.py
 	$(call Host/Configure/Default)
+endef
+
+define Build/Patch
+	$(if $(QUILT),rm -rf $(PKG_BUILD_DIR)/patches; mkdir -p $(PKG_BUILD_DIR)/patches)
+	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/def,def/)
+ifdef CONFIG_TARGET_x86
+	$(call PatchDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/x86,x86/)
+endif
+	$(if $(QUILT),touch $(PKG_BUILD_DIR)/.quilt_used)
+endef
+
+define Quilt/Refresh/Package
+	$(call Quilt/RefreshDir,$(PKG_BUILD_DIR),$(PATCH_DIR)/def,def/)
 endef
 
 define Host/Compile
