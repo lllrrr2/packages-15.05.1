@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=2.6.9
+PKG_VERSION:=3.4.6
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=http://ffmpeg.org/releases/
-PKG_MD5SUM:=c3bdcce6f5ea0d138cae57ee38affa39
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
+PKG_SOURCE_URL:=https://ffmpeg.org/releases/
+PKG_MD5SUM:=ff3e96b56edc485a91673392610afa08
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 
 PKG_LICENSE:=LGPL-2.1+ GPL-2+ LGPL-3
@@ -390,7 +390,6 @@ FFMPEG_CONFIGURE:= \
 	--disable-inline-asm \
 	--disable-yasm \
 	--disable-mips32r2 \
-	--disable-mipsdspr1 \
 	--disable-mipsdspr2 \
 	--disable-mipsfpu \
 	\
