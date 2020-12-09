@@ -36,7 +36,11 @@ define Package/python3-parsel
   TITLE:=parsel library
   URL:=https://github.com/scrapy/parsel
   DEPENDS:= \
-	  +python3-light
+	  +python3-light \
+	  +python3-six \
+	  +python3-lxml \
+	  +python3-w3lib \
+	  +python3-cssselect
 endef
 
 define Package/python3-parsel/description
