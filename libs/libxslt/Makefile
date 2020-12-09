@@ -8,24 +8,28 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxslt
-PKG_VERSION:=1.1.28
-PKG_RELEASE:=3
+PKG_VERSION:=1.1.33
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:= \
 	http://xmlsoft.org/sources/ \
 	ftp://fr.rpmfind.net/pub/libxml/
-PKG_MD5SUM:=9667bf6f9310b957254fdcf6596600b7
+PKG_MD5SUM:=b3bd254a03e46d58f8ad1e4559cd2c2f
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:xmlsoft:libxslt
 
 PKG_MAINTAINER:=Jiri Slachta <jiri@slachta.eu>
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 
+HOST_BUILD_DEPENDS:=libxml2/host
+
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 define Package/libxslt
   SECTION:=libs
@@ -54,7 +58,7 @@ endef
 define Package/xsltproc
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libxml2 +libxslt +libexslt
+  DEPENDS:=+libxslt +PACKAGE_xsltproc:libexslt
   TITLE:=Gnome XSLT xsltproc Utility
   URL:=http://xmlsoft.org/XSLT/
 endef
@@ -72,8 +76,6 @@ CONFIGURE_ARGS+= \
 	--without-debug \
 	--without-mem-debug \
 	--without-debugger \
-
-TARGET_CFLAGS += $(FPIC)
 
 define Build/InstallDev/Xslt
 	$(INSTALL_DIR) $(1)/usr/bin $(2)/bin $(1)/usr/include/libxslt \
@@ -127,17 +129,27 @@ define Build/InstallDev
 	 $(if $(CONFIG_PACKAGE_libexslt),$(call Build/InstallDev/Exslt,$(1),$(2)))
 endef
 
+HOST_CONFIGURE_ARGS+= \
+	--disable-silent-rules \
+	--enable-static \
+	--with-libxml-prefix=$(STAGING_DIR_HOSTPKG) \
+	--without-python \
+	--without-crypto \
+	--without-debug \
+	--without-mem-debug \
+	--without-debugger
+
 define Package/libxslt/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) \
-		$(PKG_INSTALL_DIR)/usr/lib/libxslt.so.* \
+		$(PKG_INSTALL_DIR)/usr/lib/libxslt.so* \
 		$(1)/usr/lib/
 endef
 
 define Package/libexslt/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) \
-		$(PKG_INSTALL_DIR)/usr/lib/libexslt.so.* \
+		$(PKG_INSTALL_DIR)/usr/lib/libexslt.so* \
 		$(1)/usr/lib/
 endef
 
@@ -151,3 +163,4 @@ endef
 $(eval $(call BuildPackage,libxslt))
 $(eval $(call BuildPackage,libexslt))
 $(eval $(call BuildPackage,xsltproc))
+$(eval $(call HostBuild))
