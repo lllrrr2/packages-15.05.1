@@ -8,13 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python3-urllib3
-PKG_VERSION:=1.25.3
+PKG_VERSION:=1.25.10
 PKG_RELEASE:=1
 PKG_CPE_ID:=cpe:/a:urllib3_project:urllib3
 
 PKG_SOURCE:=urllib3-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/u/urllib3
-PKG_MD5SUM:=f09e95a5c42a7cc7ff7cb6a14c55fb69
+PKG_MD5SUM:=94e3d4d472a14e788d4bd1a903fd102b
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-urllib3-$(PKG_VERSION)
 
