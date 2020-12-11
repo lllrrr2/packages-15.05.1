@@ -71,7 +71,7 @@ endef
 define Package/python3-base
 $(call Package/python3/Default)
   TITLE:=Python $(PYTHON_VERSION) interpreter
-  DEPENDS:=+libpthread +zlib
+  DEPENDS:=+libpthread +zlib +libncursesw
 endef
 
 define Package/python3-base/description
