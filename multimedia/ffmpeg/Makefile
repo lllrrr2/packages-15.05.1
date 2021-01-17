@@ -344,7 +344,8 @@ $(call Package/libffmpeg/Default)
  TITLE+= (full)
  DEPENDS+= +alsa-lib +libgnutls +libopus \
     +lame-lib \
-    +fdk-aac
+    +fdk-aac \
+    +shine
  VARIANT:=full
 endef
 
