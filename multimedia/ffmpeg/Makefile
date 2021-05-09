@@ -361,6 +361,9 @@ define Package/libffmpeg-mini
 $(call Package/libffmpeg/Default)
  TITLE+= (mini)
  VARIANT:=mini
+ DEPENDS+= +libgnutls +libopus \
+    +lame-lib \
+    +fdk-aac
 endef
 
 define Package/libffmpeg-mini/description
@@ -638,11 +641,11 @@ endef
 
 define Build/InstallDev/mini
 	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avformat,avutil} $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avformat,avutil,swresample} $(1)/usr/include/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avformat,avutil}.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avformat,avutil,swresample}.{a,so*} $(1)/usr/lib/
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avformat,avutil}.pc $(1)/usr/lib/pkgconfig/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avformat,avutil,swresample}.pc $(1)/usr/lib/pkgconfig/
 endef
 
 Build/InstallDev/audio-dec = $(Build/InstallDev/custom)
@@ -711,5 +714,5 @@ $(eval $(call BuildPackage,ffmpeg-custom))
 $(eval $(call BuildPackage,ffprobe-custom))
 $(eval $(call BuildPackage,libffmpeg-audio-dec))
 $(eval $(call BuildPackage,libffmpeg-full))
-$(eval $(call BuildPackage,libffmpeg-mini))
+#$(eval $(call BuildPackage,libffmpeg-mini))
 $(eval $(call BuildPackage,libffmpeg-custom))
