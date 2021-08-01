@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2015 OpenWrt.org
+# Copyright (C) 2007-2019 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,20 +8,21 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=glib2
-PKG_VERSION:=2.43.4
-PKG_RELEASE:=1
+PKG_VERSION:=2.58.3
+PKG_RELEASE:=5
 
 PKG_SOURCE:=glib-$(PKG_VERSION).tar.xz
 PKG_BUILD_DIR:=$(BUILD_DIR)/glib-$(PKG_VERSION)
-PKG_SOURCE_URL:=@GNOME/glib/2.43
-PKG_MD5SUM:=2f28879252c660a65aa3139ec499776b
+PKG_SOURCE_URL:=@GNOME/glib/2.58
+PKG_MD5SUM:=8058c7bde846dcffe5fa453eca366d73
 
 PKG_BUILD_PARALLEL:=1
 HOST_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=glib2/host libpthread zlib libintl libffi
-HOST_BUILD_DEPENDS:=libintl/host libiconv/host libffi/host
+PKG_BUILD_DEPENDS:=glib2/host gettext
+HOST_BUILD_DEPENDS:=gettext-full/host libiconv/host libffi/host
 PKG_INSTALL:=1
-PKG_USE_MIPS16:=0
+
+PKG_CPE_ID:=cpe:/a:gnome:glib
 
 PKG_FIXUP:=autoreconf
 
@@ -44,26 +45,42 @@ define Package/glib2/description
   The GLib library of C routines
 endef
 
+TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections -flto
+
 HOST_CONFIGURE_ARGS += \
-	--disable-selinux
+	--disable-libelf \
+	--disable-selinux \
+	--with-libiconv=gnu \
+	--with-pcre=internal \
+	--disable-libmount
 
 CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
-	--enable-debug=no \
+	--disable-debug \
 	--disable-selinux \
+	--disable-libmount \
 	--disable-fam \
-	$(if $(ICONV_FULL),--with-libiconv=gnu)
+	--disable-gtk-doc-html \
+	--disable-man \
+	--disable-compile-warnings \
+	--with-libiconv=gnu \
+	--with-pcre=internal
 
 CONFIGURE_VARS += \
 	glib_cv_stack_grows=no \
 	glib_cv_uscore=no \
-	ac_cv_path_GLIB_GENMARSHAL=$(STAGING_DIR_HOST)/bin/glib-genmarshal \
+	ac_cv_path_GLIB_GENMARSHAL=$(STAGING_DIR_HOSTPKG)/bin/glib-genmarshal \
 	ac_cv_func_mmap_fixed_mapped=yes \
 	ac_cv_func_posix_getpwuid_r=yes \
 	ac_cv_func_posix_getgrgid_r=yes
 
 define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(CP) \
+		$(PKG_INSTALL_DIR)/usr/bin/* \
+		$(1)/usr/bin/
+
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/include/glib-2.0 \
