@@ -28,7 +28,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/libgd
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libjpeg +libpng
+  DEPENDS:=+libjpeg-turbo +libpng
   TITLE:=The GD graphics library
   URL:=http://www.libgd.org/
 endef

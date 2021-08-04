@@ -30,7 +30,7 @@ define Package/libuvc
 	SECTION:=libs
 	CATEGORY:=Libraries
 	TITLE:=libuvc
-	DEPENDS:=+libusb-1.0 +libjpeg
+	DEPENDS:=+libusb-1.0 +libjpeg-turbo
        URL:=https://int80k.com/libuvc
 endef
 

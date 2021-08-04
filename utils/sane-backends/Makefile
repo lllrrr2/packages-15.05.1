@@ -151,7 +151,7 @@ define Package/sane-frontends
   $(call Package/sane-backends/Default)
   SECTION:=utils
   CATEGORY:=Utilities
-  DEPENDS:=+libsane +libjpeg +libpng
+  DEPENDS:=+libsane +libjpeg-turbo +libpng
   TITLE+= (frontends)
 endef
 
@@ -279,18 +279,18 @@ $(eval $(call SaneBackend,cardscan,Corex CardScan usb scanners))
 $(eval $(call SaneBackend,coolscan,Nikon film-scanners))
 $(eval $(call SaneBackend,coolscan2,Nikon Coolscan film scanners))
 $(eval $(call SaneBackend,coolscan3,Nikon Coolscan film scanners))
-$(eval $(call SaneBackend,dc210,Kodak DC210 Digital Camera,+libjpeg))
-$(eval $(call SaneBackend,dc240,Kodak DC240 Digital Camera,+libjpeg))
+$(eval $(call SaneBackend,dc210,Kodak DC210 Digital Camera,+libjpeg-turbo))
+$(eval $(call SaneBackend,dc240,Kodak DC240 Digital Camera,+libjpeg-turbo))
 $(eval $(call SaneBackend,dc25,Kodak DC20/DC25 Digital Cameras))
 $(eval $(call SaneBackend,dell1600n_net,Dell 1600n,+libtiff))
 $(eval $(call SaneBackend,dmc,Polaroid Digital Microscope Camera))
 $(eval $(call SaneBackend,epjitsu,Epson-based Fujitsu USB scanners))
 $(eval $(call SaneBackend,epson,EPSON scanners))
-$(eval $(call SaneBackend,epsonds,EPSON scanners,+libjpeg)) ####
+$(eval $(call SaneBackend,epsonds,EPSON scanners,+libjpeg-turbo)) ####
 $(eval $(call SaneBackend,epson2,EPSON scanners))
 $(eval $(call SaneBackend,fujitsu,Fujitsu flatbed and ADF scanners))
 $(eval $(call SaneBackend,genesys,GL646 GL841 GL843 GL847 and GL124 based USB flatbed scanners))
-#$(eval $(call SaneBackend,gphoto2,digital cameras supported by gphoto2,+libjpeg))
+#$(eval $(call SaneBackend,gphoto2,digital cameras supported by gphoto2,+libjpeg-turbo))
 $(eval $(call SaneBackend,gt68xx,GT-68XX based USB flatbed scanners))
 $(eval $(call SaneBackend,hp,HP ScanJet scanners))
 $(eval $(call SaneBackend,hp3500,Hewlett-Packard ScanJet 3500 series scanners))
@@ -350,7 +350,7 @@ $(eval $(call SaneBackend,u12,Plustek USB flatbed scanners based on older parpor
 $(eval $(call SaneBackend,umax,UMAX scanners))
 $(eval $(call SaneBackend,umax1220u,the UMAX Astra 1220U and similar scanners))
 $(eval $(call SaneBackend,umax_pp,Umax Astra parallel port flatbed scanners))
-$(eval $(call SaneBackend,v4l,Video for Linux API,+libv4l +libjpeg))
+$(eval $(call SaneBackend,v4l,Video for Linux API,+libv4l +libjpeg-turbo))
 $(eval $(call SaneBackend,xerox_mfp,Xerox Phaser 3200MFP device))
 $(eval $(call BuildPackage,sane-backends))
 $(eval $(call BuildPackage,sane-backends-all))

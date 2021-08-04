@@ -38,7 +38,7 @@ define Package/opencv
   TITLE:=opencv-2.4.11
   URL:=http://opencv.org/
   MAINTAINER:=WRTnode Team <pub@wrtnode.com>
-  DEPENDS:=+libpthread +librt +libstdcpp +zlib +libjpeg
+  DEPENDS:=+libpthread +librt +libstdcpp +zlib +libjpeg-turbo
 endef
 
 
