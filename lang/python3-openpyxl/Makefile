@@ -33,6 +33,8 @@ define Package/python3-openpyxl
   URL:=https://foss.heptapod.net/openpyxl/openpyxl
   DEPENDS:= \
 	  +python3-light \
+	  +python3-decimal \
+	  +python3-xml \
 	  +python3-et_xmlfile
 endef
 
