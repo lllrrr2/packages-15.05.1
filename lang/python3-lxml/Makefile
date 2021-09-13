@@ -16,12 +16,12 @@ include $(TOPDIR)/rules.mk
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python3-lxml
-PKG_VERSION:=4.6.2
+PKG_VERSION:=4.6.3
 PKG_RELEASE:=1
 
 PKG_SOURCE:=lxml-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/db/f7/43fecb94d66959c1e23aa53d6161231dca0e93ec500224cf31b3c4073e37/
-PKG_MD5SUM:=2e39c6e17d61f61e5be68fd328ba6a51
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/e5/21/a2e4517e3d216f0051687eea3d3317557bde68736f038a3b105ac3809247/
+PKG_MD5SUM:=017f94473dcec0f9b2e9b03524398fa5
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-lxml-$(PKG_VERSION)
 
