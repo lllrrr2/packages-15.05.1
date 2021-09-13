@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python3-openpyxl
-PKG_VERSION:=3.0.5
+PKG_VERSION:=3.0.8
 PKG_RELEASE:=1
 
 PKG_SOURCE:=openpyxl-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/40/32/ee6469111cc624ec00c073986dbd05430ba7265138260cd6dd3771311c3b/
-PKG_MD5SUM:=526b7149538575d58e55df1bd37807c1
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/1f/fd/b8d831d0cc949c454b1f02d26b4cd5bafaf71e959a68f326909291fb2089/
+PKG_MD5SUM:=bdd7bb6f834598b24b26733e819c5162
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-openpyxl-$(PKG_VERSION)
 
@@ -33,8 +33,7 @@ define Package/python3-openpyxl
   URL:=https://foss.heptapod.net/openpyxl/openpyxl
   DEPENDS:= \
 	  +python3-light \
-	  +python3-et_xmlfile \
-	  +python3-jdcal
+	  +python3-et_xmlfile
 endef
 
 define Package/python3-openpyxl/description
