@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-mwan3
-PKG_VERSION:=18.06
+PKG_VERSION:=19.07
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Aedan Renner <chipdankly@gmail.com> \
 		Florian Eckert <fe@dev.tdt.de>
