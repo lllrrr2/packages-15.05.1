@@ -1,3 +1,5 @@
+# Copyright (C) 2010-2021 OpenWrt.org
+#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -5,142 +7,57 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=node
+PKG_VERSION:=v8
+PKG_RELEASE:=
 
-PKG_VERSION:=v8.17.0
-PKG_RELEASE:=1
-PKG_MD5SUM:=d9351ed3cb46b5e69c31418a49852d19
-PATCH_DIR:=./patches/v8.x
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=http://nodejs.org/dist/${PKG_VERSION}
-
-HOST_BUILD_DEPENDS:=python/host
-PKG_BUILD_DEPENDS:=python/host
-PKG_INSTALL:=1
-PKG_USE_MIPS16:=0
-
-HOST_BUILD_PARALLEL:=1
-PKG_BUILD_PARALLEL:=1
-
-PKG_MAINTAINER:=Hirokazu MORIKAWA <morikw2@gmail.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
-
-include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Package/node
+define Package/$(PKG_NAME)
   SECTION:=lang
   CATEGORY:=Languages
-  SUBMENU:=Node.js
+  SUBMENU:=Node.js-v8
   TITLE:=Node.js is a platform built on Chrome's JavaScript runtime
-  URL:=http://nodejs.org/
+  URL:=https://nodejs.org/
   DEPENDS:=+libstdcpp +libopenssl +zlib +USE_UCLIBC:libpthread +USE_UCLIBC:librt
 endef
 
-define Package/node/description
-  Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses
-  an event-driven, non-blocking I/O model that makes it lightweight and efficient. Node.js'
-   package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
+define Package/$(PKG_NAME)/description
+node8 for ramips and ar71xx
 endef
 
-define Package/node-npm
-  SECTION:=lang
-  CATEGORY:=Languages
-  SUBMENU:=Node.js
-  TITLE:=NPM stands for Node Package Manager
-  URL:=http://npmjs.com/
-  DEPENDS:=+node
-endef
+ifeq ($(ARCH),x86_64)
+	node_ARCH:=x86_64
+	PKG_MD5SUM:=4e294cd6c8af22ff58b099398cefa334
+endif
 
-define Package/node-npm/description
- NPM is the package manager for Node.js
-endef
+ifeq ($(ARCH),mipsel)
+ifdef CONFIG_TARGET_ramips_mt7621
+	node_ARCH:=mt7621
+	PKG_MD5SUM:=459d13cb3b62798b2d153ca1f7da2efa
+else
+	node_ARCH:=mt7620
+	PKG_MD5SUM:=f19b49e99de2a0d5bfa93dd81282a383
+endif
+endif
 
-define Package/node/config
-	menu "Configuration"
-		depends on PACKAGE_node
+ifeq ($(ARCH),mips)
+	node_ARCH:=ar71xx
+	PKG_MD5SUM:=0df720e0efadf3c2c49389eb289ea0ab
+endif
 
-	choice
-		prompt "Version Selection"
-		default NODEJS_8
-		help
-		 Select node.js version.
-
-		config NODEJS_4
-			bool "4.x End-of-life : NO LONGER SUPPORTED"
-
-		config NODEJS_6
-			bool "6.x End-of-life : NO LONGER SUPPORTED"
-
-		config NODEJS_8
-			bool "8.x Maintenance LTS"
-	endchoice
-
-	endmenu
-endef
-
-NODEJS_CPU:=$(subst powerpc,ppc,$(subst aarch64,arm64,$(subst x86_64,x64,$(subst i386,ia32,$(ARCH)))))
-
-MAKE_VARS+= \
-	DESTCPU=$(NODEJS_CPU)
-
-CONFIGURE_VARS:= \
-	CC="$(TARGET_CC) $(TARGET_CFLAGS)" \
-	CC_host="$(HOSTCC)"
-
-CONFIGURE_ARGS:= \
-	--dest-cpu=$(NODEJS_CPU) \
-	--dest-os=linux \
-	--without-snapshot \
-	--shared-zlib \
-	--shared-openssl \
-	$(if $(CONFIG_NODEJS_4),,--with-intl=none) \
-	$(if $(findstring mips,$(NODEJS_CPU)), \
-		$(if $(CONFIG_SOFT_FLOAT),--with-mips-float-abi=soft)) \
-	$(if $(findstring +neon,$(CONFIG_CPU_TYPE)),--with-arm-fpu=neon) \
-	$(if $(findstring +vfp",$(CONFIG_CPU_TYPE)),--with-arm-fpu=vfp) \
-	$(if $(findstring +vfpv3",$(CONFIG_CPU_TYPE)),--with-arm-fpu=vfpv3-d16) \
-	$(if $(findstring +vfpv4",$(CONFIG_CPU_TYPE)),--with-arm-fpu=vfpv3) \
-	--prefix=/usr
-
-HOST_CONFIGURE_VARS:=
-HOST_CONFIGURE_ARGS:= \
-	--dest-os=linux \
-	--without-snapshot \
-	--with-intl=none \
-	--prefix=$(STAGING_DIR_HOST)
-
-HOST_CONFIGURE_CMD:=python ./configure
+PKG_SOURCE_URL:=https://raw.githubusercontent.com/syb999/cc-upx/master/node/$(node_ARCH)
+PKG_SOURCE:=node
 
 define Build/Prepare
-	$(if $(findstring arm,$(NODEJS_CPU)), $(if $(CONFIG_SOFT_FLOAT), \
-		echo "You can't running Node.js on ARM CPU without hardware FPU."; \
-		exit 1; \
-	))
-	$(Build/Prepare/Default)
+	mv $(DL_DIR)/$(PKG_SOURCE) $(PKG_BUILD_DIR)
 endef
 
-define Build/InstallDev
-	$(INSTALL_DIR) $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+define Build/Compile
 endef
 
-define Package/node/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/node $(1)/usr/bin/
+define Package/$(PKG_NAME)/install
+	$(INSTALL_DIR) $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/node $(1)/usr/bin/node
 endef
 
-define Package/node-npm/install
-	$(INSTALL_DIR) $(1)/usr/lib/node_modules
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/node_modules/* $(1)/usr/lib/node_modules/
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(LN) ../lib/node_modules/npm/bin/npm-cli.js $(1)/usr/bin/npm
-ifeq ($(CONFIG_NODEJS_8),y)
-	$(LN) ../lib/node_modules/npm/bin/npx-cli.js $(1)/usr/bin/npx
-endif
-endef
-
-$(eval $(call HostBuild))
-$(eval $(call BuildPackage,node))
-$(eval $(call BuildPackage,node-npm))
+$(eval $(call BuildPackage,$(PKG_NAME)))
