@@ -18,7 +18,7 @@ PKG_MD5SUM:=8058c7bde846dcffe5fa453eca366d73
 
 PKG_BUILD_PARALLEL:=1
 HOST_BUILD_PARALLEL:=1
-PKG_BUILD_DEPENDS:=glib2/host gettext
+PKG_BUILD_DEPENDS:=glib2/host gettext libiconv/host
 HOST_BUILD_DEPENDS:=gettext-full/host libiconv/host libffi/host
 PKG_INSTALL:=1
 
