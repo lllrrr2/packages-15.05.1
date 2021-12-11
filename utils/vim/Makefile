@@ -8,19 +8,26 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vim
-PKG_VERSION:=7.4
-PKG_RELEASE:=2
-VIMVER:=74
+PKG_VERSION:=8.1
+PKG_RELEASE:=5
+VIMVER:=81
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=ftp://ftp.vim.org/pub/vim/unix/
-PKG_MD5SUM:=607e135c559be642f210094ad023dc65
+PKG_SOURCE_URL:=http://ftp.vim.org/pub/vim/unix
+PKG_MD5SUM:=1739a1df312305155285f0cfa6118294
 PKG_MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr>
+PKG_CPE_ID:=cpe:/a:vim:vim
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)$(VIMVER)
 PKG_BUILD_PARALLEL:=1
 
+HOST_BUILD_DEPENDS:=libiconv/host
+
+HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)$(VIMVER)
+HOST_BUILD_PARALLEL:=1
+
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/host-build.mk
 
 define Package/vim/Default
   SECTION:=utils
@@ -39,6 +46,12 @@ endef
 define Package/vim-full
   $(call Package/vim/Default)
   TITLE+= (Normal)
+endef
+
+
+define Package/vim-fuller
+  $(call Package/vim/Default)
+  TITLE+= (Big)
 endef
 
 define Package/vim-runtime
@@ -78,6 +91,12 @@ define Package/vim-full/description
  (Normal build)
 endef
 
+
+define Package/vim-fuller/description
+ Vim is an almost compatible version of the UNIX editor Vi.
+ (Big build)
+endef
+
 define Package/vim-runtime/description
  Vim is an almost compatible version of the UNIX editor Vi.
  (Runtime files)
@@ -93,6 +112,15 @@ define Package/xxd/description
  a hex dump back to its original binary form.
 endef
 
+HOST_CONFIGURE_ARGS += \
+	--disable-acl \
+	--disable-gpm \
+	--disable-nls \
+	--disable-selinux \
+	--enable-gui=no \
+	--with-features=normal \
+	--without-x
+
 CONFIGURE_ARGS += \
 	--disable-gui \
 	--disable-gtktest \
@@ -102,9 +130,11 @@ CONFIGURE_ARGS += \
 	--disable-cscope \
 	--disable-gpm \
 	--disable-acl \
-	--with-tlib=ncurses
+	--with-tlib=ncurses \
+	--with-compiledby="non-existent-hostname-compiled"
 
 CONFIGURE_VARS += \
+	ac_cv_header_elf_h=no \
 	vim_cv_getcwd_broken=no \
 	vim_cv_memmove_handles_overlap=yes \
 	vim_cv_stat_ignores_slash=yes \
@@ -113,6 +143,15 @@ CONFIGURE_VARS += \
 	vim_cv_toupper_broken=no \
 	vim_cv_tty_group=root \
 	vim_cv_tty_mode=0620
+
+ifneq ($(HOST_OS),Linux)
+  TARGET_PATH_PKG:=$(CURDIR)/scripts:$(TARGET_PATH_PKG)
+endif
+
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(MAKE) -C $(PKG_BUILD_DIR)/src autoconf
+endef
 
 ifneq ($(CONFIG_PACKAGE_vim),)
 define Build/Compile/vim
@@ -138,6 +177,20 @@ define Build/Compile/vim-full
 endef
 endif
 
+ifneq ($(CONFIG_PACKAGE_vim-fuller),)
+define Build/Compile/vim-fuller
+	$(call Build/Configure/Default, \
+		--with-features=big \
+		--enable-multibyte \
+	)
+	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
+		DESTDIR="$(PKG_INSTALL_DIR)" all
+	$(CP) $(PKG_BUILD_DIR)/src/$(PKG_NAME) $(PKG_BUILD_DIR)/vim_big
+endef
+endif
+
+
+
 ifneq ($(CONFIG_PACKAGE_xxd),)
 define Build/Compile/xxd
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
@@ -155,6 +208,7 @@ endef
 define Build/Compile
 $(call Build/Compile/vim)
 $(call Build/Compile/vim-full)
+$(call Build/Compile/vim-fuller)
 $(call Build/Compile/vim-runtime)
 $(call Build/Compile/xxd)
 endef
@@ -173,6 +227,17 @@ define Package/vim-full/install
 	$(INSTALL_CONF) ./files/vimrc.full $(1)/usr/share/vim/vimrc
 endef
 
+
+define Package/vim-fuller/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/vim_big $(1)/usr/bin/vim
+	$(INSTALL_DIR) $(1)/usr/share/vim
+	$(CP) -r $(PKG_INSTALL_DIR)/usr/share/vim/vim$(VIMVER) $(1)/usr/share/vim
+	$(INSTALL_CONF) ./files/vimrc.full $(1)/usr/share/vim/vimrc
+endef
+
+
+
 define Package/vim-runtime/install
 	$(CP) $(PKG_INSTALL_DIR)/* $(1)
 	rm -rf $(1)/usr/share/vim/vim$(VIMVER)/doc
@@ -189,6 +254,8 @@ endef
 
 $(eval $(call BuildPackage,vim))
 $(eval $(call BuildPackage,vim-full))
+$(eval $(call BuildPackage,vim-fuller))
 $(eval $(call BuildPackage,vim-runtime))
 $(eval $(call BuildPackage,vim-help))
 $(eval $(call BuildPackage,xxd))
+$(eval $(call HostBuild))
