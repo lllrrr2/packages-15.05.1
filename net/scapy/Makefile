@@ -18,7 +18,7 @@ PKG_SOURCE_URL:=https://codeload.github.com/secdev/scapy/tar.gz/v$(PKG_VERSION)?
 PKG_MD5SUM:=01e52ff5d1f04364e17fc2d42872282e
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 define Package/scapy
   SECTION:=net

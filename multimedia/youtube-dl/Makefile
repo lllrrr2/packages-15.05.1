@@ -21,7 +21,7 @@ PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/python3/python3-package.mk
+include ../../lang/python/python3-package.mk
 
 define Package/youtube-dl
   SECTION:=multimedia
