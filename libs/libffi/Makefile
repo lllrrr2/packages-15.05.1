@@ -78,5 +78,15 @@ define Package/libffi/install
 		$(1)/usr/lib/
 endef
 
+define Host/Install
+	$(call Host/Install/Default)
+	# Adjust host libffi headers ; the default rule does
+	# not seem to install them to the proper include folder
+	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/include
+	$(CP) \
+		$(STAGING_DIR_HOSTPKG)/lib/libffi-$(PKG_VERSION)/include/*.h \
+		$(STAGING_DIR_HOSTPKG)/include
+endef
+
 $(eval $(call HostBuild))
 $(eval $(call BuildPackage,libffi))
