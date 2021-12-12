@@ -8,17 +8,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython-lib
-PKG_VERSION:=1.9.3
+PKG_VERSION=0.5-20150827-$(PKG_SOURCE_VERSION)
 PKG_RELEASE:=1
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/micropython/micropython-lib/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=66e15380eb109613263beb6825b8eecb9191088270c1a59e8c7d922dd57183c7
 
 PKG_MAINTAINER:=Roger D <rogerdammit@gmail.com>
 PKG_LICENSE:=MIT, PSFL
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/micropython/micropython-lib.git
+PKG_SOURCE_VERSION:=bfbbf85a181d84e2494ea6f15be311734666bf67
+
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION)
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -39,12 +42,13 @@ define Package/micropython-lib/description
 endef
 
 MAKE_FLAGS:=\
-	PREFIX=$(PKG_BUILD_DIR)/_install_tmp/dist \
+	-C $(PKG_BUILD_DIR) \
+	PREFIX=$(PKG_BUILD_DIR)/_install_tmp \
 	install
 
 define Package/micropython-lib/install
 	$(INSTALL_DIR) $(1)/usr/lib/micropython
-	$(CP) $(PKG_BUILD_DIR)/_install_tmp/dist/* $(1)/usr/lib/micropython
+	$(CP) $(PKG_BUILD_DIR)/_install_tmp/* $(1)/usr/lib/micropython
 endef
 
 $(eval $(call BuildPackage,micropython-lib))

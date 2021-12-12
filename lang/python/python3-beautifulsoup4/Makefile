@@ -19,12 +19,16 @@ PKG_NAME:=python3-beautifulsoup4
 PKG_VERSION:=4.9.3
 PKG_RELEASE:=1
 
-PYPI_NAME:=beautifulsoup4
-PKG_HASH:=84729e322ad1d5b4d25f805bfa05b902dd96450f43842c4e99067d5e1369eb25
+PKG_SOURCE:=beautifulsoup4-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/6b/c3/d31704ae558dcca862e4ee8e8388f357af6c9d9acb0cad4ba0fbbd350d9a
+PKG_MD5SUM:=57fd468ae3eb055f6871106e8f7813e2
 
-include $(TOPDIR)/feeds/packages/lang/python/pypi.mk
+PKG_BUILD_DIR:=$(BUILD_DIR)/python3-beautifulsoup4-$(PKG_VERSION)
+
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+
+PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python3-beautifulsoup4
   SUBMENU:=Python
@@ -41,6 +45,17 @@ define Package/python3-beautifulsoup4/description
 Beautiful Soup is a library that makes it easy to scrape information from web pages. 
 endef
 
-$(eval $(call Py3Package,python3-beautifulsoup4))
+define Build/Compile
+	$(call Build/Compile/Py3Mod,., \
+		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)", \
+	)
+endef
+
+define Package/python3-beautifulsoup4/install
+	$(INSTALL_DIR) $(1)$(PYTHON3_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/* \
+	    $(1)$(PYTHON3_PKG_DIR)
+endef
+
 $(eval $(call BuildPackage,python3-beautifulsoup4))
-$(eval $(call BuildPackage,python3-beautifulsoup4-src))

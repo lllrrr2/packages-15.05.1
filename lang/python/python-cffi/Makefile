@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2018 OpenWrt.org
+# Copyright (C) 2015-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,37 +7,51 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=python-cffi
-PKG_VERSION:=1.14.6
+PKG_NAME:=cffi
+PKG_VERSION:=1.8.3
 PKG_RELEASE:=1
 
-PYPI_NAME:=cffi
-PKG_HASH:=c9a875ce9d7fe32887784274dd533c57909b7b1dcadcc128a2ac21331a9765dd
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://pypi.python.org/packages/0a/f3/686af8873b70028fccf67b15c78fd4e4667a3da995007afc71e786d61b0a
+PKG_MD5SUM:=c8e877fe0426a99d0cf5872cf2f95b27
+
+PKG_BUILD_DEPENDS:=python python-setuptools
+HOST_BUILD_DEPENDS:=libffi/host python/host python-setuptools/host python-pycparser/host
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
-include ../pypi.mk
+include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python3-package.mk
+$(call include_mk, python-package.mk)
+$(call include_mk, python-host.mk)
 
-define Package/python3-cffi
-  SECTION:=lang
-  CATEGORY:=Languages
-  SUBMENU:=Python
-  TITLE:=C Foreign Function Interface
-  URL:=https://cffi.readthedocs.org/
-  DEPENDS:= \
-      +libffi \
-      +python3-light \
-      +python3-pycparser
+define Package/python-cffi
+	SECTION:=lang
+	CATEGORY:=Languages
+	SUBMENU:=Python
+	TITLE:=python-cffi
+	URL:=http://cffi.readthedocs.org/
+	DEPENDS:=+libffi +python-light +python-pycparser
 endef
 
-define Package/python3-cffi/description
+define Package/python-cffi/description
 Foreign Function Interface for Python calling C code.
 endef
 
-$(eval $(call Py3Package,python3-cffi))
-$(eval $(call BuildPackage,python3-cffi))
-$(eval $(call BuildPackage,python3-cffi-src))
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix="/usr" --root="$(PKG_INSTALL_DIR)")
+endef
+
+define Host/Compile
+	$(call Build/Compile/HostPyMod,,install --prefix="" --root="$(STAGING_DIR_HOSTPKG)")
+endef
+
+define Host/Install
+endef
+
+$(eval $(call HostBuild))
+
+$(eval $(call PyPackage,python-cffi))
+$(eval $(call BuildPackage,python-cffi))

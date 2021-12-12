@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2007-2017 OpenWrt.org
+# Copyright (C) 2007-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,40 +7,43 @@
 
 include $(TOPDIR)/rules.mk
 
-# Please do not update: 3.3.0 is the last version compatible with Django 1.11
 PKG_NAME:=django-postoffice
-PKG_VERSION:=3.3.0
+PKG_VERSION:=2.0.8
 PKG_RELEASE:=1
-
-PYPI_NAME:=django-post-office
-PYPI_SOURCE_NAME:=django-post_office
-PKG_HASH:=b06514da601c22e955bd93a4ac6dd6b2218c571ca67c193e62bd1f22cec7536f
-
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE.txt
 
-include ../pypi.mk
+PKG_SOURCE:=django-post_office-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://pypi.python.org/packages/52/25/cc0cfe923f183d7c19b162cac3bf8430ddaed7bad28202b8f93a97d248a4/
+PKG_BUILD_DIR:=$(BUILD_DIR)/django-post_office-$(PKG_VERSION)/
+PKG_MD5SUM:=437bf62cef06381d346ae2bc087c0e3c
+PKG_BUILD_DEPENDS:=python python-setuptools
+
 include $(INCLUDE_DIR)/package.mk
-include ../python3-package.mk
+$(call include_mk, python-package.mk)
 
-define Package/python3-django-postoffice
+define Package/django-postoffice
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A Django app to monitor and send mail asynchronously
-  URL:=https://github.com/ui/django-post_office
-  DEPENDS:= \
-	+python3 \
-	+python3-django1 \
-	+python3-django-jsonfield2
+  MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
+  TITLE:=A Django app to monitor and send mail asynchronously, complete with template support.
+  URL:=https://github.com/ui/django-postoffice
+  DEPENDS:=+python +django +django-jsonfield
 endef
 
-define Package/python3-django-postoffice/description
-  A Django app to monitor and send mail asynchronously, complete with template
-  support
+define Package/django-postoffice/description
+  A Django app to monitor and send mail asynchronously, complete with template support.
 endef
 
-$(eval $(call Py3Package,python3-django-postoffice))
-$(eval $(call BuildPackage,python3-django-postoffice))
-$(eval $(call BuildPackage,python3-django-postoffice-src))
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
+endef
+
+define Package/django-postoffice/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
+endef
+
+$(eval $(call BuildPackage,django-postoffice))

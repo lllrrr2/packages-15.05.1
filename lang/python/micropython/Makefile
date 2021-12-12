@@ -8,17 +8,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython
-PKG_VERSION:=1.9.4
-PKG_RELEASE:=2
-
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/micropython/micropython/releases/download/v$(PKG_VERSION)
-PKG_HASH:=0db042011bffcbd65362b67eb3cca87eaefa9f2a55b747fa75e922c706b8ce1a
+PKG_VERSION=1.4.5-20150827-$(PKG_SOURCE_VERSION)
+PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Roger D <rogerdammit@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/micropython/micropython.git
+PKG_SOURCE_VERSION:=936e25b164d837fc91e4bafd76580e747b235dff
+
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -28,7 +31,7 @@ define Package/micropython
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Micro Python
-  URL:=https://micropython.org
+  URL:=http://micropython.org
   DEPENDS:=+libffi
 endef
 
@@ -37,18 +40,13 @@ define Package/micropython/description
  that is optimised to run on a microcontroller (and low power computers).
 endef
 
-
-MAKE_FLAGS += -C $(PKG_BUILD_DIR)/ports/unix FROZEN_MPY_DIR=
-
-define Build/Compile
-	$(call Build/Compile/Default,axtls)
-	$(call Build/Compile/Default)
-
-endef
+MAKE_FLAGS += \
+       -C $(PKG_BUILD_DIR)/unix \
+       MICROPY_USE_READLINE=0
 
 define Package/micropython/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ports/unix/micropython $(1)/usr/bin/micropython
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/unix/micropython $(1)/usr/bin/micropython
 endef
 
 $(eval $(call BuildPackage,micropython))

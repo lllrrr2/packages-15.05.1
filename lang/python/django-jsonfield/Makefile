@@ -8,37 +8,41 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=django-jsonfield
-PKG_VERSION:=2.1.1
-PKG_RELEASE:=2
+PKG_VERSION:=1.0.1
+PKG_RELEASE:=1
+PKG_LICENSE:=BSD-3-Clause
 
-PYPI_NAME:=jsonfield
-PKG_HASH:=ed7c5e1829e9453e24a8bebef1e702ffe402e6def6b326f0e0b88764c59a6dc7
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://pypi.python.org/packages/e4/b2/a079f0a2218e0eb7892edbf404e0bbfbb281a6bbf06966b775f5142ed159/
+PKG_MD5SUM:=2e5e737a3f93f3b5d7ae6026b1340167
+PKG_BUILD_DEPENDS:=python python-setuptools
 
-PKG_MAINTAINER:=Alexandru Ardelean <ardeleanalex@gmail.com>
-PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
-
-include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python3-package.mk
+$(call include_mk, python-package.mk)
 
-define Package/python3-django-jsonfield
+define Package/django-jsonfield
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
-  TITLE:=A reusable Django field to store validated JSON in models
-  URL:=https://github.com/rpkilby/jsonfield
-  DEPENDS:= \
-	+python3 \
-	+python3-django1 \
-	+python3-six
+  MAINTAINER:=Gergely Kiss <mail.gery@gmail.com>
+  TITLE:=JSONField for django models
+  URL:=https://github.com/bradjasper/django-jsonfield
+  DEPENDS:=+python +django
 endef
 
-define Package/python3-django-jsonfield/description
-  jsonfield is a reusable model field that allows you to store validated
-  JSON, automatically handling serialization to and from the database.
+define Package/django-jsonfield/description
+  JSONField for django models
 endef
 
-$(eval $(call Py3Package,python3-django-jsonfield))
-$(eval $(call BuildPackage,python3-django-jsonfield))
-$(eval $(call BuildPackage,python3-django-jsonfield-src))
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix=/usr --root=$(PKG_INSTALL_DIR))
+endef
+
+define Package/django-jsonfield/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
+endef
+
+$(eval $(call BuildPackage,django-jsonfield))

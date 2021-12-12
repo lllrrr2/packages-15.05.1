@@ -19,12 +19,15 @@ PKG_NAME:=python3-parsel
 PKG_VERSION:=1.6.0
 PKG_RELEASE:=1
 
-PYPI_NAME:=parsel
-PKG_HASH:=70efef0b651a996cceebc69e55a85eb2233be0890959203ba7c3a03c72725c79
+PKG_SOURCE_URL:=https://github.com/scrapy/parsel
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_VERSION:=7ed4b24a9b8ef874c644c6cec01654539bc66cc3
+PKG_MD5SUM:=37d4721bb35983e6dfb30eec43a6e36e
 
-include $(TOPDIR)/feeds/packages/lang/python/pypi.mk
+PKG_BUILD_DIR:=$(BUILD_DIR)/python3-parsel-$(PKG_VERSION)
+
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
 
 define Package/python3-parsel
   SUBMENU:=Python
@@ -46,6 +49,17 @@ define Package/python3-parsel/description
  regular expressions.
 endef
 
-$(eval $(call Py3Package,python3-parsel))
+define Build/Compile
+	$(call Build/Compile/Py3Mod,., \
+		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)", \
+	)
+endef
+
+define Package/python3-parsel/install
+	$(INSTALL_DIR) $(1)$(PYTHON3_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/* \
+	    $(1)$(PYTHON3_PKG_DIR)
+endef
+
 $(eval $(call BuildPackage,python3-parsel))
-$(eval $(call BuildPackage,python3-parsel-src))

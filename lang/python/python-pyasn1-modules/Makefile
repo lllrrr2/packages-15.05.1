@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2018 OpenWrt.org
+# Copyright (C) 2015 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -7,37 +7,40 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=python-pyasn1-modules
-PKG_VERSION:=0.2.8
-PKG_RELEASE:=2
+PKG_NAME:=pyasn1-modules
+PKG_VERSION:=0.0.8
+PKG_RELEASE:=1
 
-PYPI_NAME:=pyasn1-modules
-PKG_HASH:=905f84c712230b2c592c19470d3ca8d552de726050d1d1716282a1f6146be65e
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://pypi.python.org/packages/source/p/pyasn1-modules
+PKG_MD5SUM:=178129bc7fbf07215c25230c5f053f81
+
+PKG_BUILD_DEPENDS:=python python-setuptools
 
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE.txt
-PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>, Alexandru Ardelean <ardeleanalex@gmail.com>
+PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
-include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
-include ../python3-package.mk
+$(call include_mk, python-package.mk)
 
-define Package/python3-pyasn1-modules
-  SECTION:=lang
-  CATEGORY:=Languages
-  SUBMENU:=Python
-  TITLE:=Collection of ASN.1 modules
-  URL:=https://github.com/etingof/pyasn1-modules
-  DEPENDS:= \
-      +python3-light \
-      +python3-pyasn1
+define Package/python-pyasn1-modules
+	SECTION:=lang
+	CATEGORY:=Languages
+	SUBMENU:=Python
+	TITLE:=python-pyasn1-modules
+	URL:=http://sourceforge.net/projects/pyasn1/
+	DEPENDS:=+python-light +python-pyasn1
 endef
 
-define Package/python3-pyasn1-modules/description
+define Package/python-pyasn1-modules/description
 This is a small but growing collection of ASN.1 data structures
 expressed in Python terms using pyasn1 data model.
 endef
 
-$(eval $(call Py3Package,python3-pyasn1-modules))
-$(eval $(call BuildPackage,python3-pyasn1-modules))
-$(eval $(call BuildPackage,python3-pyasn1-modules-src))
+define Build/Compile
+	$(call Build/Compile/PyMod,,install --prefix="/usr" --root="$(PKG_INSTALL_DIR)")
+endef
+
+$(eval $(call PyPackage,python-pyasn1-modules))
+$(eval $(call BuildPackage,python-pyasn1-modules))
