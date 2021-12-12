@@ -19,7 +19,7 @@ PKG_MD5SUM:=7a94399d5554ce832d48b3f191c323ac
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-chardet-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 define Package/python3-chardet
   SUBMENU:=Python

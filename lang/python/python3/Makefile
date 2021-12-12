@@ -8,7 +8,7 @@
 include $(TOPDIR)/rules.mk
 
 # The file included below defines PYTHON_VERSION
-include python3-version.mk
+include ../python3-version.mk
 
 PYTHON_VERSION:=$(PYTHON3_VERSION)
 PYTHON_VERSION_MICRO:=$(PYTHON3_VERSION_MICRO)
@@ -27,10 +27,10 @@ PKG_LICENSE_FILES:=LICENSE Doc/copyright.rst Doc/license.rst Modules/_ctypes/dar
 PKG_CPE_ID:=cpe:/a:python:python
 
 # This file provides the necsessary host build variables
-include python3-host.mk
+include ../python3-host.mk
 
 # For Py3Package
-include python3-package.mk
+include ../python3-package.mk
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1

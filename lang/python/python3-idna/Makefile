@@ -27,7 +27,7 @@ PKG_MD5SUM:=a802847c76a831674cbad80ce3c6ccea
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-idna-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 define Package/python3-idna
   SUBMENU:=Python

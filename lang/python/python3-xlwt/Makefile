@@ -18,7 +18,7 @@ PKG_MD5SUM:=4b1ca8a3cef3261f4b4dc3f138e383a8
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-xlwt-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 

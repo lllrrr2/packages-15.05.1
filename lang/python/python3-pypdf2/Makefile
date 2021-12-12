@@ -22,12 +22,12 @@ PKG_RELEASE:=1
 PKG_SOURCE_URL:=https://github.com/mstamy2/PyPDF2
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=18a2627adac13124d4122c8b92aaa863ccfb8c29
-#PKG_MD5SUM:=37d4721bb35983e6dfb30eec43a6e36e
+PKG_MD5SUM:=1a591f6e5a582b9556986dc542b24782
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-pypdf2-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 define Package/python3-pypdf2
   SUBMENU:=Python

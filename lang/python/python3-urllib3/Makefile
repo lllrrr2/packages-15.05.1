@@ -19,7 +19,7 @@ PKG_MD5SUM:=94e3d4d472a14e788d4bd1a903fd102b
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-urllib3-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
