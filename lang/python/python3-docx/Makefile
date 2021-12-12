@@ -17,13 +17,10 @@ PKG_MD5SUM:=231baf33ba280d3d751ce50d48872a1e
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-docx-$(PKG_VERSION)
 
-include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
-
 PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python3/python3-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
 define Package/python3-docx
   SUBMENU:=Python
