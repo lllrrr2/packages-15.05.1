@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2006-2014 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -8,20 +6,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=expat
-PKG_VERSION:=2.1.0
-PKG_RELEASE:=3
+PKG_VERSION:=2.2.10
+PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_MD5SUM:=dd7dab7a5fea97d2a6a43f511449b7cd
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@SF/expat
-PKG_MAINTAINER:=Steven Barth <cyrus@openwrt.org>
+PKG_MD5SUM:=e0fe49a6b3480827c9455e4cfc799133
 
+PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:libexpat:expat
 
 PKG_FIXUP:=autoreconf
-PKG_REMOVE_FILES:=conftools/libtool.m4
-
 PKG_INSTALL:=1
 PKG_BUILD_PARALLEL:=1
 
@@ -32,7 +29,7 @@ define Package/libexpat
   SECTION:=libs
   CATEGORY:=Libraries
   TITLE:=An XML parsing library
-  URL:=http://expat.sourceforge.net/
+  URL:=https://libexpat.github.io/
 endef
 
 define Package/libexpat/description
@@ -43,7 +40,11 @@ TARGET_CFLAGS += $(FPIC)
 
 CONFIGURE_ARGS += \
 	--enable-shared \
-	--enable-static
+	--enable-static \
+	--without-docbook
+
+HOST_CONFIGURE_ARGS += \
+	--without-docbook
 
 define Host/Install
 	$(MAKE) -C $(HOST_BUILD_DIR) install
