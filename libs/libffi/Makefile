@@ -8,18 +8,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libffi
-PKG_VERSION:=3.2.1
-PKG_RELEASE:=3
+PKG_VERSION:=3.4.2
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=ftp://sourceware.org/pub/libffi/
-PKG_MD5SUM:=83b89587607e3eb65c70d361f13bab43
+PKG_SOURCE_URL:=https://codeload.github.com/libffi/libffi/tar.gz/v$(PKG_VERSION)?
+PKG_MD5SUM:=f2e272ec793571f28d52006ad14534c4
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
 include $(INCLUDE_DIR)/package.mk
@@ -46,14 +47,21 @@ A layer must exist above libffi that handles type conversions for values passed
 between the two languages.
 endef
 
-CONFIGURE_PATH = build
-CONFIGURE_CMD = ../configure
-MAKE_PATH = build
+HOST_CONFIGURE_ARGS += \
+	--disable-shared \
+	--disable-debug \
+	--disable-docs \
+	--disable-multi-os-directory \
+	--disable-raw-api \
+	--disable-structs \
+	--with-pic
 
-define Build/Configure
-	mkdir -p $(PKG_BUILD_DIR)/build
-	$(Build/Configure/Default)
-endef
+CONFIGURE_ARGS += \
+	--disable-debug \
+	--disable-docs \
+	--disable-multi-os-directory \
+	--disable-raw-api \
+	--disable-structs
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
@@ -63,11 +71,11 @@ define Build/InstallDev
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/lib/pkgconfig/* \
 		$(1)/usr/lib/pkgconfig/
-	sed -i -e 's,includedir=.*,includedir=$$$${prefix}/include,' $(1)/usr/lib/pkgconfig/libffi.pc
+	$(SED) 's,includedir=.*,includedir=$$$${prefix}/include,' $(1)/usr/lib/pkgconfig/libffi.pc
 
 	$(INSTALL_DIR) $(1)/usr/include
 	$(CP) \
-		$(PKG_INSTALL_DIR)/usr/lib/$(PKG_NAME)-$(PKG_VERSION)/include/*.h \
+		$(PKG_INSTALL_DIR)/usr/include/*.h \
 		$(1)/usr/include/
 endef
 
@@ -76,16 +84,6 @@ define Package/libffi/install
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/lib/libffi.so.* \
 		$(1)/usr/lib/
-endef
-
-define Host/Install
-	$(call Host/Install/Default)
-	# Adjust host libffi headers ; the default rule does
-	# not seem to install them to the proper include folder
-	$(INSTALL_DIR) $(STAGING_DIR_HOSTPKG)/include
-	$(CP) \
-		$(STAGING_DIR_HOSTPKG)/lib/libffi-$(PKG_VERSION)/include/*.h \
-		$(STAGING_DIR_HOSTPKG)/include
 endef
 
 $(eval $(call HostBuild))
