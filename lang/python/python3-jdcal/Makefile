@@ -17,10 +17,10 @@ PKG_MD5SUM:=e05bdb60fa80f25bc60e73e0c6b7c5dc
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-jdcal-$(PKG_VERSION)
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+
+PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python3-jdcal
   SUBMENU:=Python

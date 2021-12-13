@@ -17,10 +17,10 @@ PKG_MD5SUM:=f47940fd9d556375420b2e276476cfaf
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/python3-et_xmlfile-$(PKG_VERSION)
 
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
-
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
+
+PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
 
 define Package/python3-et_xmlfile
   SUBMENU:=Python
