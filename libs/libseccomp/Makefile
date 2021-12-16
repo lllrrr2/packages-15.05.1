@@ -14,7 +14,7 @@ PKG_USE_MIPS16:=0
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/seccomp/libseccomp/releases/download/v$(PKG_VERSION)/
-PKG_HASH:=b54f27b53884caacc932e75e6b44304ac83586e2abe7a83eca6daecc5440585b
+PKG_MD5SUM:=ee87fb68ae293883bde9e042c6bc324f
 PKG_MAINTAINER:=Nikos Mavrogiannopoulos <nmav@gnutls.org>
 PKG_CPE_ID:=cpe:/a:libseccomp_project:libseccomp
 
