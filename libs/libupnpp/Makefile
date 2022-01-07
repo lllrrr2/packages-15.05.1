@@ -26,7 +26,7 @@ define Package/libupnpp
   SECTION:=libs
   CATEGORY:=Libraries
   URL:=http://www.lesbonscomptes.com/upmpdcli
-  DEPENDS+= +libstdcpp +libexpat +librt +libcurl +libupnp
+  DEPENDS+= +libstdcpp +libexpat +librt +libcurl +libupnp-old
   TITLE:=The libupnpp C++ library wraps libupnp for easier use by upmpdcli and upplay
 endef
 
