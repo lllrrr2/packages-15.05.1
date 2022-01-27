@@ -48,6 +48,8 @@ define Package/scapy/install
 	$(CP) \
 		$(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/* \
 		$(1)$(PYTHON3_PKG_DIR)/
+	sed 1d -i $(PKG_INSTALL_DIR)/usr/bin/scapy
+	sed '1i #!/usr/bin/python3' -i $(PKG_INSTALL_DIR)/usr/bin/scapy
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin
 endef
 
