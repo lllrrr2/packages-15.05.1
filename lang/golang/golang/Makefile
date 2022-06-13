@@ -7,12 +7,12 @@
 
 include $(TOPDIR)/rules.mk
 
-GO_VERSION_MAJOR_MINOR:=1.17
+GO_VERSION_MAJOR_MINOR:=1.18
 GO_VERSION_PATCH:=
 
 PKG_NAME:=golang
 PKG_VERSION:=$(GO_VERSION_MAJOR_MINOR)$(if $(GO_VERSION_PATCH),.$(GO_VERSION_PATCH))
-PKG_RELEASE:=2
+PKG_RELEASE:=1
 
 GO_SOURCE_URLS:=https://dl.google.com/go/ \
                 https://mirrors.ustc.edu.cn/golang/ \
@@ -20,7 +20,7 @@ GO_SOURCE_URLS:=https://dl.google.com/go/ \
 
 PKG_SOURCE:=go$(PKG_VERSION).src.tar.gz
 PKG_SOURCE_URL:=$(GO_SOURCE_URLS)
-PKG_MD5SUM:=d51e5679ec5660b840aa2bdea8012174
+PKG_MD5SUM:=da8a439a13865ad0d298a703e70e7ee
 
 PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 PKG_LICENSE:=BSD-3-Clause
@@ -71,7 +71,7 @@ HOST_GO_VALID_OS_ARCH:= \
 
 BOOTSTRAP_SOURCE:=go1.4-bootstrap-20171003.tar.gz
 BOOTSTRAP_SOURCE_URL:=$(GO_SOURCE_URLS)
-BOOTSTRAP_HASH:=f4ff5b5eb3a3cae1c993723f3eab519c5bae18866b5e5f96fe1102f0cb5c3e52
+BOOTSTRAP_MD5SUM:=dbf727a4b0e365bf88d97cbfde590016
 
 BOOTSTRAP_BUILD_DIR:=$(HOST_BUILD_DIR)/.go_bootstrap
 

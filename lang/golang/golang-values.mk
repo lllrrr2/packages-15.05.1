@@ -29,7 +29,8 @@ unexport \
   GOOS \
   GOPATH \
   GOROOT \
-  GOTMPDIR
+  GOTMPDIR \
+  GOWORK
 # Unmodified:
 #   GOINSECURE
 #   GOPRIVATE
