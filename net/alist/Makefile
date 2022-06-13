@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=2.5.1
+PKG_VERSION:=2.6.1
 PKG_WEB_VERSION:=2.5.0
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/Xhofe/alist/tar.gz/v$(PKG_VERSION)?
-PKG_MD5SUM:=599463ad9758b85b78ec82174ab2b767
+PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
+PKG_MD5SUM:=b240d70e40209581b243677a6b613597
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -77,7 +77,6 @@ define Build/Compile
 			tar -zxvf $(DL_DIR)/$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz -C ./ ; \
 			cp -ax dist/* ./public/ ; \
 			cp -ax $(CURDIR)/files/assets/* ./public/assets/ ; \
-			rm -rf dist/ ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
