@@ -8,19 +8,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ttyd
-PKG_VERSION:=1.5.2
-PKG_RELEASE:=1
+PKG_VERSION:=1.6.3
+PKG_RELEASE:=3
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/tsl0922/ttyd/tar.gz/$(PKG_VERSION)?
-PKG_MD5SUM:=e28298a58a96c35304b65443218f570e
+PKG_MD5SUM:=5a1ec5ca1977424d5ecbc05e6ebd2028
 
+PKG_MAINTAINER:=Shuanglei Tao <tsl0922@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Shuanglei Tao <tsl0922@gmail.com>
 
-PKG_BUILD_DEPENDS:=vim/host
-CMAKE_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -29,13 +28,17 @@ define Package/ttyd
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=Command-line tool for sharing terminal over the web
-	DEPENDS:=+libopenssl +libjson-c +libpthread +libwebsockets-full
+	DEPENDS:=+libopenssl +libjson-c +libuv +zlib +libwebsockets-full
 	URL:=https://github.com/tsl0922/ttyd
 	SUBMENU:=Terminal
 endef
 
 define Package/ttyd/description
 ttyd is a command-line tool for sharing terminal over the web.
+endef
+
+define Package/ttyd/conffiles
+/etc/config/ttyd
 endef
 
 define Package/ttyd/install
