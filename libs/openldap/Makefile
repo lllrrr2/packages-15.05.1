@@ -37,7 +37,7 @@ define Package/libopenldap
   $(call Package/openldap/Default)
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libopenssl +libsasl2 +libpthread
+  DEPENDS:=+libopenssl +libsasl2 +libpthread +libgnutls
   TITLE+= (libraries)
 endef
 
