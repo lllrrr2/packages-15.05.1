@@ -1,0 +1,393 @@
+--- a/src/modules/rlm_eap/libeap/eap_tls.h
++++ b/src/modules/rlm_eap/libeap/eap_tls.h
+@@ -123,6 +123,12 @@ typedef struct _tls_info_t {
+ 	char		initialized;
+ } tls_info_t;
+ 
++#if OPENSSL_VERSION_NUMBER < 0x10001000L
++#define ssl_session ssl->session
++#else
++#define ssl_session session
++#endif
++
+ /*
+  * tls_session_t Structure gets stored as opaque in EAP_HANDLER
+  * This contains EAP-REQUEST specific data
+@@ -141,6 +147,9 @@ typedef struct _tls_info_t {
+ typedef struct _tls_session_t {
+ 	SSL_CTX		*ctx;
+ 	SSL 		*ssl;
++#if OPENSSL_VERSION_NUMBER >= 0x10001000L
++	SSL_SESSION	*session;
++#endif
+ 	tls_info_t	info;
+ 
+ 	BIO 		*into_ssl;
+--- a/src/modules/rlm_eap/libeap/eap_tls.c
++++ b/src/modules/rlm_eap/libeap/eap_tls.c
+@@ -129,7 +129,7 @@ int eaptls_success(EAP_HANDLER *handler,
+ 	    (((vp = pairfind(request->config_items, 1127)) != NULL) &&
+ 	     (vp->vp_integer == 0))) {
+ 		SSL_CTX_remove_session(tls_session->ctx,
+-				       tls_session->ssl->session);
++				       tls_session->ssl_session);
+ 		tls_session->allow_session_resumption = 0;
+ 
+ 		/*
+@@ -167,12 +167,12 @@ int eaptls_success(EAP_HANDLER *handler,
+ 		}
+ 
+ 		if (vps) {
+-			SSL_SESSION_set_ex_data(tls_session->ssl->session,
++			SSL_SESSION_set_ex_data(tls_session->ssl_session,
+ 						eaptls_session_idx, vps);
+ 		} else {
+ 			RDEBUG2("WARNING: No information to cache: session caching will be disabled for this session.");
+ 			SSL_CTX_remove_session(tls_session->ctx,
+-					       tls_session->ssl->session);
++					       tls_session->ssl_session);
+ 		}
+ 
+ 		/*
+@@ -181,7 +181,7 @@ int eaptls_success(EAP_HANDLER *handler,
+ 		 */
+ 	} else {
+ 	       
+-		vps = SSL_SESSION_get_ex_data(tls_session->ssl->session,
++		vps = SSL_SESSION_get_ex_data(tls_session->ssl_session,
+ 					     eaptls_session_idx);
+ 		if (!vps) {
+ 			RDEBUG("WARNING: No information in cached session!");
+@@ -248,7 +248,7 @@ int eaptls_fail(EAP_HANDLER *handler, in
+ 	/*
+ 	 *	Force the session to NOT be cached.
+ 	 */
+-	SSL_CTX_remove_session(tls_session->ctx, tls_session->ssl->session);
++	SSL_CTX_remove_session(tls_session->ctx, tls_session->ssl_session);
+ 
+ 	eaptls_compose(handler->eap_ds, &reply);
+ 
+@@ -792,7 +792,7 @@ static eaptls_status_t eaptls_operation(
+ 	 */
+ 	if (!tls_handshake_recv(handler->request, tls_session)) {
+ 		DEBUG2("TLS receive handshake failed during operation");
+-		SSL_CTX_remove_session(tls_session->ctx, tls_session->ssl->session);
++		SSL_CTX_remove_session(tls_session->ctx, tls_session->ssl_session);
+ 		return EAPTLS_FAIL;
+ 	}
+ 
+--- a/src/modules/rlm_eap/libeap/mppe_keys.c
++++ b/src/modules/rlm_eap/libeap/mppe_keys.c
+@@ -25,6 +25,7 @@
+ #include <freeradius-devel/ident.h>
+ RCSID("$Id: 3b3b9aa796ca282f5b45632a8a3af9d8dac2c65f $")
+ 
++#include <openssl/ssl.h>
+ #include <openssl/hmac.h>
+ #include "eap_tls.h"
+ 
+@@ -56,51 +57,51 @@ static void P_hash(const EVP_MD *evp_md,
+ 		   const unsigned char *seed,   unsigned int seed_len,
+ 		   unsigned char *out, unsigned int out_len)
+ {
+-	HMAC_CTX ctx_a, ctx_out;
++	HMAC_CTX *ctx_a, *ctx_out;
+ 	unsigned char a[HMAC_MAX_MD_CBLOCK];
+ 	unsigned int size;
+ 
+-	HMAC_CTX_init(&ctx_a);
+-	HMAC_CTX_init(&ctx_out);
++	ctx_a = HMAC_CTX_new();
++	ctx_out = HMAC_CTX_new();
+ #ifdef EVP_MD_CTX_FLAG_NON_FIPS_ALLOW
+-	HMAC_CTX_set_flags(&ctx_a, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
+-	HMAC_CTX_set_flags(&ctx_out, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++	HMAC_CTX_set_flags(ctx_a, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
++	HMAC_CTX_set_flags(ctx_out, EVP_MD_CTX_FLAG_NON_FIPS_ALLOW);
+ #endif
+-	HMAC_Init_ex(&ctx_a, secret, secret_len, evp_md, NULL);
+-	HMAC_Init_ex(&ctx_out, secret, secret_len, evp_md, NULL);
++	HMAC_Init_ex(ctx_a, secret, secret_len, evp_md, NULL);
++	HMAC_Init_ex(ctx_out, secret, secret_len, evp_md, NULL);
+ 
+-	size = HMAC_size(&ctx_out);
++	size = HMAC_size(ctx_out);
+ 
+ 	/* Calculate A(1) */
+-	HMAC_Update(&ctx_a, seed, seed_len);
+-	HMAC_Final(&ctx_a, a, NULL);
++	HMAC_Update(ctx_a, seed, seed_len);
++	HMAC_Final(ctx_a, a, NULL);
+ 
+ 	while (1) {
+ 		/* Calculate next part of output */
+-		HMAC_Update(&ctx_out, a, size);
+-		HMAC_Update(&ctx_out, seed, seed_len);
++		HMAC_Update(ctx_out, a, size);
++		HMAC_Update(ctx_out, seed, seed_len);
+ 
+ 		/* Check if last part */
+ 		if (out_len < size) {
+-			HMAC_Final(&ctx_out, a, NULL);
++			HMAC_Final(ctx_out, a, NULL);
+ 			memcpy(out, a, out_len);
+ 			break;
+ 		}
+ 
+ 		/* Place digest in output buffer */
+-		HMAC_Final(&ctx_out, out, NULL);
+-		HMAC_Init_ex(&ctx_out, NULL, 0, NULL, NULL);
++		HMAC_Final(ctx_out, out, NULL);
++		HMAC_Init_ex(ctx_out, NULL, 0, NULL, NULL);
+ 		out += size;
+ 		out_len -= size;
+ 
+ 		/* Calculate next A(i) */
+-		HMAC_Init_ex(&ctx_a, NULL, 0, NULL, NULL);
+-		HMAC_Update(&ctx_a, a, size);
+-		HMAC_Final(&ctx_a, a, NULL);
++		HMAC_Init_ex(ctx_a, NULL, 0, NULL, NULL);
++		HMAC_Update(ctx_a, a, size);
++		HMAC_Final(ctx_a, a, NULL);
+ 	}
+ 
+-	HMAC_CTX_cleanup(&ctx_a);
+-	HMAC_CTX_cleanup(&ctx_out);
++	HMAC_CTX_free(ctx_a);
++	HMAC_CTX_free(ctx_out);
+ 	memset(a, 0, sizeof(a));
+ }
+ 
+@@ -135,11 +136,6 @@ void eaptls_gen_mppe_keys(VALUE_PAIR **r
+ 	unsigned char *p;
+ 	size_t prf_size;
+ 
+-	if (!s->s3) {
+-		DEBUG("ERROR: No SSLv3 information");
+-		return;
+-	}
+-
+ 	prf_size = strlen(prf_label);
+ 
+ #if OPENSSL_VERSION_NUMBER >= 0x10001000L
+@@ -188,21 +184,15 @@ void eaptls_gen_mppe_keys(VALUE_PAIR **r
+  */
+ void eapttls_gen_challenge(SSL *s, uint8_t *buffer, size_t size)
+ {
+-#if OPENSSL_VERSION_NUMBER < 0x10001000L
+-	uint8_t out[32], buf[32];
+-	uint8_t seed[sizeof(EAPTLS_PRF_CHALLENGE)-1 + 2*SSL3_RANDOM_SIZE];
+-	uint8_t *p = seed;
+-#endif
+-
+-	if (!s->s3) {
+-		DEBUG("ERROR: No SSLv3 information");
+-		return;
+-	}
+-
+ #if OPENSSL_VERSION_NUMBER >= 0x10001000L
+ 	SSL_export_keying_material(s, buffer, size, EAPTLS_PRF_CHALLENGE,
+ 				   sizeof(EAPTLS_PRF_CHALLENGE) - 1, NULL, 0, 0);
++
+ #else
++	uint8_t out[32], buf[32];
++	uint8_t seed[sizeof(EAPTLS_PRF_CHALLENGE)-1 + 2*SSL3_RANDOM_SIZE];
++	uint8_t *p = seed;
++
+ 	memcpy(p, EAPTLS_PRF_CHALLENGE, sizeof(EAPTLS_PRF_CHALLENGE)-1);
+ 	p += sizeof(EAPTLS_PRF_CHALLENGE)-1;
+ 	memcpy(p, s->s3->client_random, SSL3_RANDOM_SIZE);
+@@ -211,7 +201,6 @@ void eapttls_gen_challenge(SSL *s, uint8
+ 
+ 	PRF(s->session->master_key, s->session->master_key_length,
+ 	    seed, sizeof(seed), out, buf, sizeof(out));
+-
+ 	memcpy(buffer, out, size);
+ #endif
+ }
+@@ -224,18 +213,14 @@ void eaptls_gen_eap_key(SSL *s, uint32_t
+ {
+ 	VALUE_PAIR *vp;
+ 
+-	if (!s->s3) {
+-		DEBUG("ERROR: No SSLv3 information");
+-		return;
+-	}
+-
+ 	vp = paircreate(PW_EAP_SESSION_ID, PW_TYPE_OCTETS);
+ 	if (!vp) return;
+ 
+ 	vp->vp_octets[0] = header & 0xff;
+-	memcpy(vp->vp_octets + 1, s->s3->client_random, SSL3_RANDOM_SIZE);
+-	memcpy(vp->vp_octets + 1 + SSL3_RANDOM_SIZE,
+-	       s->s3->server_random, SSL3_RANDOM_SIZE);
++
++	SSL_get_client_random(s, vp->vp_octets + 1, SSL3_RANDOM_SIZE);
++	SSL_get_server_random(s, vp->vp_octets + 1 + SSL3_RANDOM_SIZE, SSL3_RANDOM_SIZE);
++
+ 	vp->length = 1 + 2 * SSL3_RANDOM_SIZE;
+ 	pairadd(vps, vp);
+ }
+--- a/src/modules/rlm_otp/otp_radstate.c
++++ b/src/modules/rlm_otp/otp_radstate.c
+@@ -87,7 +87,7 @@ otp_gen_state(char rad_state[OTP_MAX_RAD
+               size_t clen,
+               int32_t flags, int32_t when, const unsigned char key[16])
+ {
+-  HMAC_CTX hmac_ctx;
++  HMAC_CTX *hmac_ctx;
+   unsigned char hmac[MD5_DIGEST_LENGTH];
+   char *p;
+   char state[OTP_MAX_RADSTATE_LEN];
+@@ -97,12 +97,13 @@ otp_gen_state(char rad_state[OTP_MAX_RAD
+    * DES, so we'll use it's hmac functionality also -- saves us from
+    * having to collect the data to be signed into one contiguous piece.
+    */
+-  HMAC_Init(&hmac_ctx, key, sizeof(key[0]) * 16, EVP_md5());
+-  HMAC_Update(&hmac_ctx, challenge, clen);
+-  HMAC_Update(&hmac_ctx, (unsigned char *) &flags, 4);
+-  HMAC_Update(&hmac_ctx, (unsigned char *) &when, 4);
+-  HMAC_Final(&hmac_ctx, hmac, NULL);
+-  HMAC_cleanup(&hmac_ctx);
++  hmac_ctx = HMAC_CTX_new();
++  HMAC_Init(hmac_ctx, key, sizeof(key[0]) * 16, EVP_md5());
++  HMAC_Update(hmac_ctx, challenge, clen);
++  HMAC_Update(hmac_ctx, (unsigned char *) &flags, 4);
++  HMAC_Update(hmac_ctx, (unsigned char *) &when, 4);
++  HMAC_Final(hmac_ctx, hmac, NULL);
++  HMAC_CTX_free(hmac_ctx);
+ 
+   /*
+    * Generate the state.  Note that it is in ASCII.  The challenge
+--- a/src/modules/rlm_wimax/rlm_wimax.c
++++ b/src/modules/rlm_wimax/rlm_wimax.c
+@@ -172,7 +172,7 @@ static int wimax_postauth(void *instance
+ 	rlm_wimax_t *inst = instance;
+ 	VALUE_PAIR *msk, *emsk, *vp;
+ 	VALUE_PAIR *mn_nai, *ip, *fa_rk;
+-	HMAC_CTX hmac;
++	HMAC_CTX *hmac;
+ 	unsigned int rk1_len, rk2_len, rk_len;
+ 	int rk_lifetime = 3600;	/* ? */
+ 	uint32_t mip_spi;
+@@ -213,20 +213,20 @@ static int wimax_postauth(void *instance
+ 	/*
+ 	 *	MIP-RK-1 = HMAC-SSHA256(EMSK, usage-data | 0x01)
+ 	 */
+-	HMAC_CTX_init(&hmac);
+-	HMAC_Init_ex(&hmac, emsk->vp_octets, emsk->length, EVP_sha256(), NULL);
++	hmac = HMAC_CTX_new();
++	HMAC_Init_ex(hmac, emsk->vp_octets, emsk->length, EVP_sha256(), NULL);
+ 	
+-	HMAC_Update(&hmac, &usage_data[0], sizeof(usage_data));
+-	HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++	HMAC_Update(hmac, &usage_data[0], sizeof(usage_data));
++	HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 	/*
+ 	 *	MIP-RK-2 = HMAC-SSHA256(EMSK, MIP-RK-1 | usage-data | 0x01)
+ 	 */
+-	HMAC_Init_ex(&hmac, emsk->vp_octets, emsk->length, EVP_sha256(), NULL);
++	HMAC_Init_ex(hmac, emsk->vp_octets, emsk->length, EVP_sha256(), NULL);
+ 	
+-	HMAC_Update(&hmac, (const uint8_t *) &mip_rk_1, rk1_len);
+-	HMAC_Update(&hmac, &usage_data[0], sizeof(usage_data));
+-	HMAC_Final(&hmac, &mip_rk_2[0], &rk2_len);
++	HMAC_Update(hmac, (const uint8_t *) &mip_rk_1, rk1_len);
++	HMAC_Update(hmac, &usage_data[0], sizeof(usage_data));
++	HMAC_Final(hmac, &mip_rk_2[0], &rk2_len);
+ 
+ 	vp = pairfind(request->reply->vps, PW_SESSION_TIMEOUT);
+ 	if (vp) rk_lifetime = vp->vp_integer;
+@@ -238,10 +238,10 @@ static int wimax_postauth(void *instance
+ 	/*
+ 	 *	MIP-SPI = HMAC-SSHA256(MIP-RK, "SPI CMIP PMIP");
+ 	 */
+-	HMAC_Init_ex(&hmac, mip_rk, rk_len, EVP_sha256(), NULL);
++	HMAC_Init_ex(hmac, mip_rk, rk_len, EVP_sha256(), NULL);
+ 	
+-	HMAC_Update(&hmac, (const uint8_t *) "SPI CMIP PMIP", 12);
+-	HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++	HMAC_Update(hmac, (const uint8_t *) "SPI CMIP PMIP", 12);
++	HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 	/*
+ 	 *	Take the 4 most significant octets.
+@@ -302,12 +302,12 @@ static int wimax_postauth(void *instance
+ 		 *	MN-HA-PMIP4 =
+ 		 *	   H(MIP-RK, "PMIP4 MN HA" | HA-IPv4 | MN-NAI);
+ 		 */
+-		HMAC_Init_ex(&hmac, mip_rk, rk_len, EVP_sha1(), NULL);
++		HMAC_Init_ex(hmac, mip_rk, rk_len, EVP_sha1(), NULL);
+ 
+-		HMAC_Update(&hmac, (const uint8_t *) "PMIP4 MN HA", 11);
+-		HMAC_Update(&hmac, (const uint8_t *) &ip->vp_ipaddr, 4);
+-		HMAC_Update(&hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
+-		HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++		HMAC_Update(hmac, (const uint8_t *) "PMIP4 MN HA", 11);
++		HMAC_Update(hmac, (const uint8_t *) &ip->vp_ipaddr, 4);
++		HMAC_Update(hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
++		HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 		/*
+ 		 *	Put MN-HA-PMIP4 into WiMAX-MN-hHA-MIP4-Key
+@@ -353,12 +353,12 @@ static int wimax_postauth(void *instance
+ 		 *	MN-HA-CMIP4 =
+ 		 *	   H(MIP-RK, "CMIP4 MN HA" | HA-IPv4 | MN-NAI);
+ 		 */
+-		HMAC_Init_ex(&hmac, mip_rk, rk_len, EVP_sha1(), NULL);
++		HMAC_Init_ex(hmac, mip_rk, rk_len, EVP_sha1(), NULL);
+ 
+-		HMAC_Update(&hmac, (const uint8_t *) "CMIP4 MN HA", 11);
+-		HMAC_Update(&hmac, (const uint8_t *) &ip->vp_ipaddr, 4);
+-		HMAC_Update(&hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
+-		HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++		HMAC_Update(hmac, (const uint8_t *) "CMIP4 MN HA", 11);
++		HMAC_Update(hmac, (const uint8_t *) &ip->vp_ipaddr, 4);
++		HMAC_Update(hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
++		HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 		/*
+ 		 *	Put MN-HA-CMIP4 into WiMAX-MN-hHA-MIP4-Key
+@@ -404,12 +404,12 @@ static int wimax_postauth(void *instance
+ 		 *	MN-HA-CMIP6 =
+ 		 *	   H(MIP-RK, "CMIP6 MN HA" | HA-IPv6 | MN-NAI);
+ 		 */
+-		HMAC_Init_ex(&hmac, mip_rk, rk_len, EVP_sha1(), NULL);
++		HMAC_Init_ex(hmac, mip_rk, rk_len, EVP_sha1(), NULL);
+ 
+-		HMAC_Update(&hmac, (const uint8_t *) "CMIP6 MN HA", 11);
+-		HMAC_Update(&hmac, (const uint8_t *) &ip->vp_ipv6addr, 16);
+-		HMAC_Update(&hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
+-		HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++		HMAC_Update(hmac, (const uint8_t *) "CMIP6 MN HA", 11);
++		HMAC_Update(hmac, (const uint8_t *) &ip->vp_ipv6addr, 16);
++		HMAC_Update(hmac, (const uint8_t *) &mn_nai->vp_strvalue, mn_nai->length);
++		HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 		/*
+ 		 *	Put MN-HA-CMIP6 into WiMAX-MN-hHA-MIP6-Key
+@@ -452,11 +452,11 @@ static int wimax_postauth(void *instance
+ 	 */
+ 	fa_rk = pairfind(request->reply->vps, WIMAX2ATTR(14));
+ 	if (fa_rk && (fa_rk->length <= 1)) {
+-		HMAC_Init_ex(&hmac, mip_rk, rk_len, EVP_sha1(), NULL);
++		HMAC_Init_ex(hmac, mip_rk, rk_len, EVP_sha1(), NULL);
+ 		
+-		HMAC_Update(&hmac, (const uint8_t *) "FA-RK", 5);
++		HMAC_Update(hmac, (const uint8_t *) "FA-RK", 5);
+ 
+-		HMAC_Final(&hmac, &mip_rk_1[0], &rk1_len);
++		HMAC_Final(hmac, &mip_rk_1[0], &rk1_len);
+ 
+ 		memcpy(fa_rk->vp_octets, &mip_rk_1[0], rk1_len);
+ 		fa_rk->length = rk1_len;
+@@ -511,7 +511,7 @@ static int wimax_postauth(void *instance
+ 	/*
+ 	 *	Wipe the context of all sensitive information.
+ 	 */
+-	HMAC_CTX_cleanup(&hmac);
++	HMAC_CTX_cleanup(hmac);
+ 
+ 	return RLM_MODULE_UPDATED;
+ }
