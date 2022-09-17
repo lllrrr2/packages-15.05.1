@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freeradius2
 PKG_VERSION:=2.2.10
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=freeradius-server-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=\
@@ -63,7 +63,7 @@ endef
 define Package/freeradius2-common
   $(call Package/freeradius2/Default)
   TITLE:=common files
-  DEPENDS:=+libpthread +FREERADIUS_OPENSSL:libopenssl
+  DEPENDS:=+libpthread +FREERADIUS_OPENSSL:libopenssl +zlib
 endef
 
 define Package/freeradius2-mod-chap
