@@ -1,0 +1,11 @@
+--- a/raddb/sites-available/default
++++ b/raddb/sites-available/default
+@@ -269,7 +269,7 @@ authenticate {
+ 
+ 	#
+ 	#  MSCHAP authentication.
+-	Auth-Type MS-CHAP {
++	Auth-Type MSCHAP {
+ 		mschap
+ 	}
+ 
