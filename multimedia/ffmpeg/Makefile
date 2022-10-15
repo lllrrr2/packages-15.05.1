@@ -345,7 +345,8 @@ $(call Package/libffmpeg/Default)
  DEPENDS+= +alsa-lib +libgnutls +libopus \
     +lame-lib \
     +fdk-aac \
-    +shine
+    +shine \
+    +libx264
  VARIANT:=full
 endef
 
@@ -459,6 +460,9 @@ ifeq ($(BUILD_VARIANT),full)
 
 	FFMPEG_CONFIGURE+= \
 		--enable-gnutls \
+		--enable-nonfree \
+		--enable-gpl \
+		--enable-libx264 --enable-decoder=libx264 \
 		$(if $(CONFIG_BUILD_PATENTED),, \
 			$(call FFMPEG_DISABLE,decoder,$(FFMPEG_PATENTED_DECODERS)) \
 			$(call FFMPEG_DISABLE,muxer,$(FFMPEG_PATENTED_MUXERS)) \
@@ -637,6 +641,11 @@ define Build/InstallDev/full
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale} $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
+ifneq ($(CONFIG_PACKAGE_libx264),)
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libpostproc.pc $(1)/usr/lib/pkgconfig/
+endif
 endef
 
 define Build/InstallDev/mini
@@ -699,6 +708,9 @@ endef
 define Package/libffmpeg-full/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.so.* $(1)/usr/lib/
+ifneq ($(CONFIG_PACKAGE_libx264),)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
+endif
 endef
 
 define Package/libffmpeg-mini/install
