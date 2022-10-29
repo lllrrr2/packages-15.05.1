@@ -397,7 +397,7 @@ FFMPEG_CONFIGURE:= \
 	--disable-debug \
 	\
 	--disable-lzma \
-	--disable-vaapi \ 
+	--disable-vaapi \
 	--disable-vdpau \
 	--enable-outdev=alsa
 
