@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2009 David Cooper <dave@kupesoft.com>
-# Copyright (C) 2009-2015 OpenWrt.org
+# Copyright (C) 2009-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -9,29 +9,30 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=msmtp
-PKG_VERSION:=1.6.2
-PKG_RELEASE:=1
+PKG_VERSION:=1.8.19
+PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@SF/msmtp
-PKG_MD5SUM:=3baca93c7e5f1aa9d36a2e5b38739ab9
+PKG_SOURCE_URL:=https://marlam.de/msmtp/releases
+PKG_MD5SUM:=353162ef030f76465d1f9689df895a39
 
-PKG_LICENSE:=GPL-3.0+
+PKG_MAINTAINER:=
+PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
-PKG_MAINTAINER:=Nicolas Thill <nico@openwrt.org>
+PKG_CPE_ID:=cpe:/a:marlam:msmtp
 
-PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
-
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
+PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/msmtp/Default
   SECTION:=mail
   CATEGORY:=Mail
+  DEPENDS:=$(INTL_DEPENDS)
   TITLE:=Simple sendmail SMTP forwarding
-  URL:=http://msmtp.sourceforge.net/
+  URL:=https://marlam.de/msmtp
 endef
 
 define Package/msmtp/Default/description
@@ -44,7 +45,7 @@ endef
 
 define Package/msmtp
 $(call Package/msmtp/Default)
-  DEPENDS+= +libopenssl
+  DEPENDS+= +libgnutls +ca-bundle
   TITLE+= (with SSL support)
   VARIANT:=ssl
 endef
@@ -69,9 +70,24 @@ $(call Package/msmtp/Default/description)
  This package is built without SSL support.
 endef
 
+define Package/msmtp-mta
+$(call Package/msmtp/Default)
+  TITLE+= (as MTA)
+  DEPENDS+=+msmtp
+  ALTERNATIVES:=\
+	100:/usr/sbin/sendmail:/usr/bin/msmtp \
+	100:/usr/lib/sendmail:/usr/bin/msmtp
+endef
+
+define Package/msmtp-mta/description
+$(call Package/msmtp/Default/description)
+ This package add a link from sendmail to msmtp
+ and is built with SSL support.
+endef
+
 define Package/msmtp-queue
 $(call Package/msmtp/Default)
-  DEPENDS+= +bash
+  DEPENDS+= +bash +msmtp
   TITLE+= (queue scripts)
 endef
 
@@ -87,21 +103,12 @@ CONFIGURE_ARGS += \
 	--without-libidn \
 	--without-libsecret \
 	--without-macosx-keyring \
-
-ifneq ($(CONFIG_USE_UCLIBC),)
-  CONFIGURE_ARGS += --disable-gai-idn
-endif
-
-MAKE_FLAGS :=
+	--without-msmtpd
 
 ifeq ($(BUILD_VARIANT),ssl)
-	CONFIGURE_ARGS += \
-		--with-tls=openssl
-endif
-
-ifeq ($(BUILD_VARIANT),nossl)
-	CONFIGURE_ARGS += \
-		--with-tls=no
+	CONFIGURE_ARGS += --with-tls=gnutls
+else
+	CONFIGURE_ARGS += --without-tls
 endif
 
 define Package/msmtp/install
@@ -112,23 +119,12 @@ define Package/msmtp/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/msmtp $(1)/usr/bin/
 endef
 
-define Package/msmtp/postinst
-	[ -e $${IPKG_INSTROOT}/usr/sbin/sendmail ] || {
-		mkdir -p $${IPKG_INSTROOT}/usr/sbin
-		ln -sf ../bin/msmtp $${IPKG_INSTROOT}/usr/sbin/sendmail
-	}
-endef
-
-define Package/msmtp/prerm
-	[ "../bin/msmtp" = "$(readlink -qs $${IPKG_INSTROOT}/usr/sbin/sendmail)" ] && {
-		rm -f $${IPKG_INSTROOT}/usr/sbin/sendmail
-	}
+define Package/msmtp-mta/install
+	$(INSTALL_DIR) $(1)/usr/sbin $(1)/usr/lib
 endef
 
 Package/msmtp-nossl/conffiles = $(Package/msmtp/conffiles)
 Package/msmtp-nossl/install = $(Package/msmtp/install)
-Package/msmtp-nossl/postinst = $(Package/msmtp/postinst)
-Package/msmtp-nossl/prerm = $(Package/msmtp/prerm)
 
 define Package/msmtp-queue/install
 	$(INSTALL_DIR) $(1)/usr/bin
@@ -139,3 +135,4 @@ endef
 $(eval $(call BuildPackage,msmtp))
 $(eval $(call BuildPackage,msmtp-nossl))
 $(eval $(call BuildPackage,msmtp-queue))
+$(eval $(call BuildPackage,msmtp-mta))
