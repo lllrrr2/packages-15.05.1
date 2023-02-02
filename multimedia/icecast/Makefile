@@ -1,6 +1,4 @@
 #
-# Copyright (C) 2006-2011 OpenWrt.org
-#
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
@@ -8,28 +6,33 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=icecast
-PKG_VERSION:=2.4.2
-PKG_RELEASE:=1
-PKG_LICENSE:=GPL-2.0
-PKG_MAINTAINER:=André Gaul <andre@gaul.io>
+PKG_VERSION:=2.4.4
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://downloads.xiph.org/releases/icecast/
-PKG_MD5SUM:=55947c83d31dfcbbede58c9521c676f4
+PKG_SOURCE_URL:=https://downloads.xiph.org/releases/icecast/
+PKG_MD5SUM:=835c7b571643f6436726a6118defb36
+
+PKG_MAINTAINER:=André Gaul <andre@gaul.io>, \
+		Ted Hess <thess@kitschensync.net>
+
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILES:=COPYING
+PKG_CPE_ID:=cpe:/a:icecast:icecast
 
 PKG_FIXUP:=autoreconf
+PKG_INSTALL:= 1
 
 include $(INCLUDE_DIR)/package.mk
-
-TREMOR_BUILD_DIR=$(PKG_BUILD_DIR)/libvorbisidec-1.2.0-dave
-TREMOR_DIR=$(TREMOR_BUILD_DIR)/ipkg-install/usr
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/icecast
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  DEPENDS:=+libcurl +libxml2 +libxslt +libogg +libopenssl
+  DEPENDS:=+libcurl +libxml2 +libxslt +libogg +libvorbisidec $(ICONV_DEPENDS)
   TITLE:=A streaming media server for Ogg/Vorbis and MP3 audio streams
-  URL:=http://www.icecast.org/
+  USERID:=icecast=87:icecast=87
+  URL:=https://icecast.org/
 endef
 
 define Package/icecast/description
@@ -41,39 +44,23 @@ define Package/icecast/description
 	interaction.
 endef
 
-define Build/Prepare
-	$(Build/Prepare/Default)
-	$(SUBMAKE) -f libvorbisidec.mk \
-		BUILD_DIR="$(PKG_BUILD_DIR)" \
-		V=99 \
-		prepare
-endef
+CONFIGURE_ARGS+= \
+	--enable-yp \
+	--with-openssl="no" \
+	--with-curl="yes" \
+	--with-curl-config="$(STAGING_DIR)/usr/bin/curl-config" \
+	--with-ogg="$(STAGING_DIR)/usr" \
+	--with-speex="no" \
+	--with-theora="no" \
+	--with-vorbis="$(STAGING_DIR)/usr" \
+	--with-xslt-config="$(STAGING_DIR)/usr/bin/xslt-config"
 
+TARGET_CFLAGS+= -I$(STAGING_DIR)/usr/include/libxml2
+
+# Manually edit configure in case both vorbis and tremor host packages are installed
 define Build/Configure
-	$(MAKE) -f libvorbisidec.mk \
-		BUILD_DIR="$(PKG_BUILD_DIR)" \
-		V=99 \
-		compile
-	$(SED) 's,-lvorbis ,$(TREMOR_DIR)/lib/libvorbisidec.a -logg ,g' $(PKG_BUILD_DIR)/configure
-	$(call Build/Configure/Default, \
-		--enable-yp \
-		--with-curl="yes" \
-		--with-curl-config="$(STAGING_DIR)/usr/bin/curl-config" \
-		--with-ogg="$(STAGING_DIR)/usr" \
-		--with-speex="no" \
-		--with-theora="no" \
-		--with-vorbis="$(TREMOR_DIR)" \
-		--with-xslt-config="$(STAGING_DIR)/usr/bin/xslt-config" \
-		, \
-		CPPFLAGS="-I$(TREMOR_DIR)/include -I$(STAGING_DIR)/usr/include/libxml2 $(TARGET_CPPFLAGS)" \
-	)
-endef
-
-define Build/Compile
-	$(MAKE) -C $(PKG_BUILD_DIR) \
-		DESTDIR="$(PKG_INSTALL_DIR)" \
-		INCLUDES="-I$(PKG_BUILD_DIR)/src -I$(TREMOR_DIR)/include" \
-		all install
+	$(SED) 's,-lvorbis -lm,-lvorbisidec -logg ,g' $(PKG_BUILD_DIR)/configure
+	$(call Build/Configure/Default)
 endef
 
 define Package/icecast/install
