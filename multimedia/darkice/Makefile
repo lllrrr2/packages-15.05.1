@@ -25,7 +25,7 @@ SECTION:=multimedia
 CATEGORY:=Multimedia
 SUBMENU:=Streaming
 TITLE:=DarkIce is a live audio streamer
-DEPENDS:=+lame-lib +librt +libpthread +libstdcpp +alsa-utils
+DEPENDS:=+lame-lib +librt +libpthread +libstdcpp +alsa-utils +libsamplerate
 MAINTAINER:=Artur Wronowski <arteqw@gmail.com>
 endef
 
@@ -40,12 +40,13 @@ CONFIGURE_ARGS += \
 		--with-pulseaudio \
 		--without-faac \
 		--without-jack \
-		--without-samplerate \
+		--with-samplerate \
 		--without-twolame \
 		--without-vorbis \
 		--with-lame-prefix="$(STAGING_DIR)/usr" \
 		--with-alsa-prefix="$(STAGING_DIR)/usr" \
 		--with-pulseaudio-prefix="$(STAGING_DIR)/usr" \
+		--with-samplerate-prefix="$(STAGING_DIR)/usr" \
 
 define Package/darkice/install
 	$(INSTALL_DIR) $(1)/usr/sbin
