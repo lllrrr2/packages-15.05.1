@@ -17,7 +17,7 @@ define Package/filebrowser
   CATEGORY:=Utilities
   TITLE:=Web File Browser which can be used as a middleware or standalone app.
   URL:=https://github.com/filebrowser/filebrowser
-  DEPENDS:=@(TARGET_kirkwood||TARGET_ar71xx||TARGET_ramips||TARGET_x86_64||TARGET_x86) +libpthread
+  DEPENDS:=@(TARGET_kirkwood||TARGET_armvirt||TARGET_ar71xx||TARGET_ramips||TARGET_x86_64||TARGET_x86) +libpthread
 endef
 
 define Package/filebrowser/description
@@ -54,6 +54,9 @@ endif
 
 ifeq ($(ARCH),arm)
 ifdef CONFIG_TARGET_kirkwood
+	filebrowser_ARCH:=kirkwood
+	PKG_MD5SUM:=864f19ac1c35ff5d93aa826a53b8c286
+else ifdef CONFIG_TARGET_armvirt
 	filebrowser_ARCH:=kirkwood
 	PKG_MD5SUM:=864f19ac1c35ff5d93aa826a53b8c286
 endif
