@@ -1,0 +1,13 @@
+--- a/kerncompat.h
++++ b/kerncompat.h
+@@ -37,10 +37,6 @@
+ #define __always_inline __inline __attribute__ ((__always_inline__))
+ #endif
+ 
+-#ifndef BTRFS_DISABLE_BACKTRACE
+-#include <execinfo.h>
+-#endif
+-
+ #define ptr_to_u64(x)	((u64)(uintptr_t)x)
+ #define u64_to_ptr(x)	((void *)(uintptr_t)x)
+ 

@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=btrfs-progs
 PKG_VERSION:=3.19.1
-PKG_RELEASE:=3
+PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-v$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=@KERNEL/linux/kernel/people/kdave/btrfs-progs/
@@ -51,6 +51,12 @@ CONFIGURE_ARGS += \
 	--disable-backtrace \
 	--disable-convert \
 	--disable-documentation
+
+define Build/InstallDev
+	$(INSTALL_DIR) $(1)/usr/include $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libbtrfs* $(1)/usr/lib/
+endef
 
 define Package/btrfs-progs/install
 	$(INSTALL_DIR) $(1)/usr/lib
