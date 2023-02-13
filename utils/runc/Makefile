@@ -38,7 +38,19 @@ else
 MAKE_FLAGS += BUILDTAGS=''
 endif
 
+ifeq ($(ARCH),arm)
+ifdef CONFIG_TARGET_armvirt
+	runc_ARCH:=arm
+	PKG_MD5SUM:=c7768b0ecf332129408e2e228d9925d7
+endif
+endif
+
+PKG_SOURCE_URL:=https://raw.githubusercontent.com/syb999/cc-upx/master/runc/$(runc_ARCH)
+PKG_SOURCE:=runc
+
+
 define Build/Prepare
+	mv $(DL_DIR)/$(PKG_SOURCE) $(PKG_BUILD_DIR)
 endef
 
 define Build/Compile
@@ -46,7 +58,7 @@ endef
 
 define Package/runc/install
 	$(INSTALL_DIR) $(1)/usr/sbin/
-	$(INSTALL_BIN) ./files/arm/runc $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/runc $(1)/usr/sbin/
 endef
 
 $(eval $(call BuildPackage,runc))
