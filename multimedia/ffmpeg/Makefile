@@ -310,7 +310,7 @@ $(call Package/libffmpeg/Default)
  DEPENDS+= @!ALL \
            +libopus \
            +lame-lib \
-           +fdk-aac
+           +libx264
  VARIANT:=custom
  MENU:=1
 endef
@@ -344,8 +344,11 @@ $(call Package/libffmpeg/Default)
  TITLE+= (full)
  DEPENDS+= +alsa-lib +libgnutls +libopus \
     +lame-lib \
-    +fdk-aac \
-    +shine
+    +shine \
+    +PACKAGE_$(PKG_NAME)_INCLUDE_libx264:libx264 \
+    +PACKAGE_$(PKG_NAME)_INCLUDE_libx265:libx265 \
+    +PACKAGE_$(PKG_NAME)_INCLUDE_libfdk-aac:fdk-aac \
+    +PACKAGE_$(PKG_NAME)_INCLUDE_libfreetype:libfreetype
  VARIANT:=full
 endef
 
@@ -363,7 +366,7 @@ $(call Package/libffmpeg/Default)
  VARIANT:=mini
  DEPENDS+= +libgnutls +libopus \
     +lame-lib \
-    +fdk-aac
+    +libx264
 endef
 
 define Package/libffmpeg-mini/description
@@ -371,7 +374,6 @@ $(call Package/ffmpeg/Default/description)
  .
  This package contains minimal-featured FFmpeg shared libraries.
 endef
-
 
 # Strip off FPU notation
 REAL_CPU_TYPE:=$(firstword $(subst +, ,$(CONFIG_CPU_TYPE)))
@@ -478,7 +480,25 @@ ifeq ($(BUILD_VARIANT),full)
 	endif
 	FFMPEG_CONFIGURE+= $(if $(CONFIG_PACKAGE_lame-lib),--enable-libmp3lame)
   endif
-	FFMPEG_CONFIGURE+= $(if $(CONFIG_PACKAGE_fdk-aac),--enable-libfdk-aac)
+  # x264 support and fdk-aac support can't coexist and be distributed.
+  # Prioritize x264 over fdk-aac in default builds (maintain status-quo).
+  ifneq ($(CONFIG_PACKAGE_libx264),)
+	FFMPEG_CONFIGURE+= \
+		--enable-gpl \
+		--enable-libx264
+  else
+	FFMPEG_CONFIGURE+= $(if $(CONFIG_PACKAGE_libfdk-aac),--enable-libfdk-aac)
+  endif
+
+  ifneq ($(CONFIG_PACKAGE_libx265),)
+	FFMPEG_CONFIGURE+= \
+		--enable-libx265
+  endif
+
+  ifneq ($(CONFIG_PACKAGE_libfreetype),)
+	FFMPEG_CONFIGURE+= \
+		--enable-libfreetype
+  endif
 endif
 
 ifeq ($(BUILD_VARIANT),custom)
@@ -552,7 +572,12 @@ ifeq ($(CONFIG_FFMPEG_CUSTOM_SELECT_libshine),y)
 	--enable-libshine --enable-encoder=libshine
 endif
 
-FFMPEG_CONFIGURE+= --disable-postproc
+ifeq ($(CONFIG_FFMPEG_CUSTOM_SELECT_libx264),y)
+  FFMPEG_CONFIGURE+= \
+	--enable-libx264 --enable-encoder=libx264
+else
+  FFMPEG_CONFIGURE+= --disable-postproc
+endif
 
 
 endif
@@ -628,8 +653,14 @@ ifeq ($(CONFIG_FFMPEG_CUSTOM_PROGRAMS),y)
 endif
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avformat,avutil}.pc $(1)/usr/lib/pkgconfig/
+ifeq ($(CONFIG_FFMPEG_CUSTOM_SELECT_libx264),y)
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libpostproc.pc $(1)/usr/lib/pkgconfig/
+endif
 endef
 
+# Only ffmpeg with libx264 is GPL (yes libpostproc); all other builds are lgpl (no libpostproc)
 define Build/InstallDev/full
 	$(INSTALL_DIR) $(1)/usr/include
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -637,6 +668,11 @@ define Build/InstallDev/full
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale} $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.{a,so*} $(1)/usr/lib/
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.pc $(1)/usr/lib/pkgconfig/
+ifneq ($(CONFIG_PACKAGE_libx264),)
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/libpostproc $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.{a,so*} $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libpostproc.pc $(1)/usr/lib/pkgconfig/
+endif
 endef
 
 define Build/InstallDev/mini
@@ -691,14 +727,21 @@ Package/ffprobe-custom/install = $(Package/ffprobe/install)
 define Package/libffmpeg-custom/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avformat,avutil}.so.* $(1)/usr/lib/
+ifeq ($(CONFIG_FFMPEG_CUSTOM_SELECT_libx264),y)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
+endif
 ifeq ($(CONFIG_FFMPEG_CUSTOM_PROGRAMS),y)
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avfilter,swresample}.so.* $(1)/usr/lib/
 endif
 endef
 
+# Only ffmpeg with libx264 is GPL (yes libpostproc); all other builds are lgpl (no libpostproc)
 define Package/libffmpeg-full/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/lib{avcodec,avdevice,avfilter,avformat,avutil,swresample,swscale}.so.* $(1)/usr/lib/
+ifneq ($(CONFIG_PACKAGE_libx264),)
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libpostproc.so.* $(1)/usr/lib/
+endif
 endef
 
 define Package/libffmpeg-mini/install

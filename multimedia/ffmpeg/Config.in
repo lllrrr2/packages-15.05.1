@@ -1,3 +1,23 @@
+config PACKAGE_ffmpeg_INCLUDE_libx264
+	bool "Include libx264"
+	default y
+	help
+
+config PACKAGE_ffmpeg_INCLUDE_libx265
+	bool "Include libx265"
+	default y
+	help
+
+config PACKAGE_ffmpeg_INCLUDE_libfdk-aac
+	bool "Include libfdk-aac"
+	default n
+	help
+
+config PACKAGE_ffmpeg_INCLUDE_libfreetype
+	bool "Include libfreetype"
+	default y
+	help
+
 config FFMPEG_X86ASM
 	bool "Compile x86 ASM"
 	depends on (x86_64 || (i386 && !(TARGET_x86_geode || TARGET_x86_legacy)))
