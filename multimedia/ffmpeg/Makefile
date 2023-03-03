@@ -347,8 +347,7 @@ $(call Package/libffmpeg/Default)
     +shine \
     +PACKAGE_$(PKG_NAME)_INCLUDE_libx264:libx264 \
     +PACKAGE_$(PKG_NAME)_INCLUDE_libx265:libx265 \
-    +PACKAGE_$(PKG_NAME)_INCLUDE_libfdk-aac:fdk-aac \
-    +PACKAGE_$(PKG_NAME)_INCLUDE_libfreetype:libfreetype
+    +PACKAGE_$(PKG_NAME)_INCLUDE_libfdk-aac:fdk-aac
  VARIANT:=full
 endef
 
@@ -493,11 +492,6 @@ ifeq ($(BUILD_VARIANT),full)
   ifneq ($(CONFIG_PACKAGE_libx265),)
 	FFMPEG_CONFIGURE+= \
 		--enable-libx265
-  endif
-
-  ifneq ($(CONFIG_PACKAGE_libfreetype),)
-	FFMPEG_CONFIGURE+= \
-		--enable-libfreetype
   endif
 endif
 

@@ -13,11 +13,6 @@ config PACKAGE_ffmpeg_INCLUDE_libfdk-aac
 	default n
 	help
 
-config PACKAGE_ffmpeg_INCLUDE_libfreetype
-	bool "Include libfreetype"
-	default y
-	help
-
 config FFMPEG_X86ASM
 	bool "Compile x86 ASM"
 	depends on (x86_64 || (i386 && !(TARGET_x86_geode || TARGET_x86_legacy)))
