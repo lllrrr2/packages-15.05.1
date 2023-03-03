@@ -18,9 +18,8 @@
 -# this section describes the audio input that will be streamed
  [input]
 -device          = /dev/dsp  # OSS DSP soundcard device for the audio input
--sampleRate      = 22050     # sample rate in Hz. try 11025, 22050 or 44100
-+device          = /dev/dsp    # OSS DSP soundcard device for the audio input
-+sampleRate      = 11025     # sample rate in Hz. try 11025, 22050 or 44100
++device          = default    # OSS DSP soundcard device for the audio input
+ sampleRate      = 22050     # sample rate in Hz. try 11025, 22050 or 44100
  bitsPerSample   = 16        # bits per sample. try 16
 -channel         = 2         # channels. 1 = mono, 2 = stereo
 +channel         = 1         # channels. 1 = mono, 2 = stereo
