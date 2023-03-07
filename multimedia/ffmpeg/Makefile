@@ -250,6 +250,10 @@ $(call Package/ffmpeg/Default)
  VARIANT:=full
 endef
 
+define Package/ffmpeg/config
+source "$(SOURCE)/ffcfg.in"
+endef
+
 define Package/ffmpeg-custom
 $(call Package/ffmpeg/Default)
  SECTION:=multimedia
