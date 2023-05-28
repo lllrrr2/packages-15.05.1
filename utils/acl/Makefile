@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014 OpenWrt.org
+# Copyright (C) 2014-2016 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,15 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=acl
-PKG_REV:=62ce6354ef5a8eb5644908748f79c8cd18474d4c
-PKG_VERSION:=20140812
-PKG_RELEASE:=1
+PKG_VERSION:=2.3.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=git://git.sv.gnu.org/acl.git
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=$(PKG_REV)
+PKG_SOURCE_URL:=https://git.savannah.nongnu.org/cgit/acl.git/snapshot
+PKG_MD5SUM:=1c252c11bfc233992078566e92bb7657
 PKG_MAINTAINER:=Maxim Storchak <m.storchak@gmail.com>
 
 PKG_LICENSE:=LGPL-2.1 GPL-2.0
@@ -29,7 +26,7 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/acl/Default
   TITLE:=Access control list (ACL) manipulation
-  URL:=http://savannah.nongnu.org/projects/acl
+  URL:=https://savannah.nongnu.org/projects/acl
   SUBMENU:=Filesystem
 endef
 
@@ -81,7 +78,7 @@ endef
 define Build/InstallDev
 	mkdir -p $(1)/usr/include
 	mkdir -p $(1)/usr/lib/pkgconfig
-	$(CP) -r $(PKG_INSTALL_DIR)/usr/{include,lib} $(1)/usr/
+	$(CP) $(PKG_INSTALL_DIR)/usr/{include,lib} $(1)/usr/
 endef
 
 $(eval $(call BuildPackage,acl))
