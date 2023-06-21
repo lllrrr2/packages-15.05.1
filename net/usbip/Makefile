@@ -30,7 +30,6 @@ define prepare_source_directory
 endef
 Hooks/Prepare/Pre += prepare_source_directory
 
-PKG_BUILD_DEPENDS:=eudev
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
 PKG_FLAGS:=nonshared
@@ -53,7 +52,7 @@ endef
 define Package/usbip
   $(call Package/usbip/Default)
   TITLE+= (common)
-  DEPENDS+= +libwrap +kmod-usbip +eudev +libudev
+  DEPENDS+= +libwrap +kmod-usbip +libudev-fbsd
 endef
 
 define Package/usbip-client
