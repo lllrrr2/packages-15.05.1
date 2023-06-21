@@ -1,0 +1,44 @@
+--- a/props.c
++++ b/props.c
+@@ -17,7 +17,7 @@
+ #include <sys/stat.h>
+ #include <sys/ioctl.h>
+ #include <sys/types.h>
+-#include <attr/xattr.h>
++#include <sys/xattr.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+ 
+--- a/cmds-receive.c
++++ b/cmds-receive.c
+@@ -34,7 +34,7 @@
+ #include <sys/ioctl.h>
+ #include <sys/time.h>
+ #include <sys/types.h>
+-#include <attr/xattr.h>
++#include <sys/xattr.h>
+ #include <uuid/uuid.h>
+ 
+ #include "ctree.h"
+--- a/cmds-restore.c
++++ b/cmds-restore.c
+@@ -32,7 +32,7 @@
+ #include <regex.h>
+ #include <getopt.h>
+ #include <sys/types.h>
+-#include <attr/xattr.h>
++#include <sys/xattr.h>
+ 
+ #include "ctree.h"
+ #include "disk-io.h"
+--- a/mkfs.c
++++ b/mkfs.c
+@@ -31,7 +31,7 @@
+ #include <getopt.h>
+ #include <uuid/uuid.h>
+ #include <ctype.h>
+-#include <attr/xattr.h>
++#include <sys/xattr.h>
+ #include <limits.h>
+ #include <linux/limits.h>
+ #include <blkid/blkid.h>
