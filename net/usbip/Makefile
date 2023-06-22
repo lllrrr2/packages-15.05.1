@@ -52,7 +52,7 @@ endef
 define Package/usbip
   $(call Package/usbip/Default)
   TITLE+= (common)
-  DEPENDS+= +libwrap +kmod-usbip +libudev-fbsd
+  DEPENDS+= +libwrap +kmod-usbip +libudev-zero
 endef
 
 define Package/usbip-client
