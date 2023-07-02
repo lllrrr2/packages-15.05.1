@@ -9,12 +9,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ffmpeg
-PKG_VERSION:=4.3.1
+PKG_VERSION:=4.3.6
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://ffmpeg.org/releases/
-PKG_MD5SUM:=5d1956bb552e91dc3b8287db346d0d58
+PKG_MD5SUM:=8822b7898f978f88262181641e7fc5f3
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>, \
 		Ian Leonard <antonlacon@gmail.com>
 
@@ -346,7 +346,7 @@ endef
 define Package/libffmpeg-full
 $(call Package/libffmpeg/Default)
  TITLE+= (full)
- DEPENDS+= +alsa-lib +libgnutls +libopus \
+ DEPENDS+= +alsa-lib +libopenssl +libopus \
     +lame-lib \
     +shine \
     +PACKAGE_$(PKG_NAME)_INCLUDE_libx264:libx264 \
@@ -367,7 +367,7 @@ define Package/libffmpeg-mini
 $(call Package/libffmpeg/Default)
  TITLE+= (mini)
  VARIANT:=mini
- DEPENDS+= +libgnutls +libopus \
+ DEPENDS+= +libopenssl +libopus \
     +lame-lib \
     +libx264
 endef
@@ -397,6 +397,7 @@ FFMPEG_CONFIGURE:= \
 	--enable-shared \
 	--enable-static \
 	--enable-pthreads \
+	--enable-protocol=rtmp,rtmps \
 	--enable-zlib \
 	--disable-doc \
 	--disable-debug \
@@ -463,7 +464,8 @@ ifeq ($(BUILD_VARIANT),full)
 	)
 
 	FFMPEG_CONFIGURE+= \
-		--enable-gnutls \
+		--enable-nonfree \
+		--enable-openssl \
 		$(if $(CONFIG_BUILD_PATENTED),, \
 			$(call FFMPEG_DISABLE,decoder,$(FFMPEG_PATENTED_DECODERS)) \
 			$(call FFMPEG_DISABLE,muxer,$(FFMPEG_PATENTED_MUXERS)) \
