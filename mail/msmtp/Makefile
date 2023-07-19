@@ -26,12 +26,14 @@ PKG_INSTALL:=1
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/msmtp/Default
   SECTION:=mail
   CATEGORY:=Mail
   TITLE:=Simple sendmail SMTP forwarding
   URL:=http://msmtp.sourceforge.net/
+  DEPENDS:=$(INTL_DEPENDS)
 endef
 
 define Package/msmtp/Default/description
