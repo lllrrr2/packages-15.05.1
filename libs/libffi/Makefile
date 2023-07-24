@@ -80,10 +80,12 @@ define Build/InstallDev
 endef
 
 define Package/libffi/install
-	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/lib/libffi.so.* \
 		$(1)/usr/lib/
+	ln -sf libffi.so.8 $(1)/usr/lib/libffi.so
 endef
 
 $(eval $(call HostBuild))
