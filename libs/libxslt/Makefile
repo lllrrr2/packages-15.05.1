@@ -8,33 +8,33 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxslt
-PKG_VERSION:=1.1.33
+PKG_VERSION:=1.1.34
 PKG_RELEASE:=4
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:= \
 	http://xmlsoft.org/sources/ \
 	ftp://fr.rpmfind.net/pub/libxml/
-PKG_MD5SUM:=b3bd254a03e46d58f8ad1e4559cd2c2f
+PKG_HASH:=98b1bd46d6792925ad2dfe9a87452ea2adebf69dcb9919ffd55bf926a7f93f7f
 
+PKG_MAINTAINER:=Jiri Slachta <jiri@slachta.eu>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
 PKG_CPE_ID:=cpe:/a:xmlsoft:libxslt
 
-PKG_MAINTAINER:=Jiri Slachta <jiri@slachta.eu>
-
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
-
+PKG_BUILD_PARALLEL:=1
 HOST_BUILD_DEPENDS:=libxml2/host
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/host-build.mk
+include $(INCLUDE_DIR)/nls.mk
 
 define Package/libxslt
   SECTION:=libs
   CATEGORY:=Libraries
-  DEPENDS:=+libxml2
+  DEPENDS:=+libxml2 $(ICONV_DEPENDS)
   TITLE:=Gnome XSLT library
   URL:=http://xmlsoft.org/XSLT/
 endef
@@ -67,8 +67,7 @@ define Package/xsltproc/description
  XSLT XML transformation utility.
 endef
 
-CONFIGURE_ARGS+= \
-	--disable-silent-rules \
+CONFIGURE_ARGS += \
 	--enable-shared \
 	--enable-static \
 	--without-python \
@@ -76,6 +75,17 @@ CONFIGURE_ARGS+= \
 	--without-debug \
 	--without-mem-debug \
 	--without-debugger \
+	--without-plugins
+
+HOST_CONFIGURE_ARGS += \
+	--with-libxml-prefix=$(STAGING_DIR_HOSTPKG) \
+	--without-python \
+	--without-crypto \
+	--without-debug \
+	--without-mem-debug \
+	--without-debugger \
+	--without-profiler \
+	--without-plugins
 
 define Build/InstallDev/Xslt
 	$(INSTALL_DIR) $(1)/usr/bin $(2)/bin $(1)/usr/include/libxslt \
@@ -128,16 +138,6 @@ define Build/InstallDev
 	 $(if $(CONFIG_PACKAGE_libxslt),$(call Build/InstallDev/Xslt,$(1),$(2)))
 	 $(if $(CONFIG_PACKAGE_libexslt),$(call Build/InstallDev/Exslt,$(1),$(2)))
 endef
-
-HOST_CONFIGURE_ARGS+= \
-	--disable-silent-rules \
-	--enable-static \
-	--with-libxml-prefix=$(STAGING_DIR_HOSTPKG) \
-	--without-python \
-	--without-crypto \
-	--without-debug \
-	--without-mem-debug \
-	--without-debugger
 
 define Package/libxslt/install
 	$(INSTALL_DIR) $(1)/usr/lib
