@@ -1,13 +1,5 @@
 #
-# Copyright (C) 2007-2019 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
-
-include $(TOPDIR)/rules.mk
-#
-# Copyright (C) 2007-2016 OpenWrt.org
+# Copyright (C) 2015, 2017-2018 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -16,48 +8,47 @@ include $(TOPDIR)/rules.mk
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=python3-six
-PKG_VERSION:=1.15.0
+PKG_VERSION:=1.16.0
 PKG_RELEASE:=1
 
-PKG_SOURCE:=six-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/6b/34/415834bfdafca3c5f451532e8a8d9ba89a21c9743a0c59fbd0205c7f9426/
-PKG_MD5SUM:=9f90a0eaa0ea7747fda01ca79d21ebcb
+PYPI_NAME:=six
+PKG_MD5SUM:=a7c927740e4964dd29b72cebfc1429bb
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/python3-six-$(PKG_VERSION)
+PKG_LICENSE:=MIT
+PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Jeffery To <jeffery.to@gmail.com>
 
+HOST_BUILD_DEPENDS:=python3/host
+
+include ../pypi.mk
+include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
-
-PKG_UNPACK:=$(HOST_TAR) -C $(PKG_BUILD_DIR) --strip-components=1 -xzf $(DL_DIR)/$(PKG_SOURCE)
+include ../python3-package.mk
 
 define Package/python3-six
-  SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
+  SUBMENU:=Python
   TITLE:=Python 2 and 3 compatibility library
-  URL:=https://six.readthedocs.io/
-  DEPENDS:= \
-	  +python3-light
+  URL:=https://github.com/benjaminp/six
+  DEPENDS:=+python3-light
 endef
 
 define Package/python3-six/description
- Six is a Python 2 and 3 compatibility library. It provides utility
- functions for smoothing over the differences between the Python ve
- rsions with the goal of writing Python code that is compatible on 
- both Python versions.
+Six is a Python 2 and 3 compatibility library.  It provides utility functions
+for smoothing over the differences between the Python versions with the goal of
+writing Python code that is compatible on both Python versions.  See the
+documentation for more information on what is provided.
 endef
 
-define Build/Compile
-	$(call Build/Compile/Py3Mod,., \
-		install --prefix="/usr" --root="$(PKG_INSTALL_DIR)", \
-	)
+define Host/Compile
+	$(call HostPython3/ModSetup,,install --prefix="" --root="$(STAGING_DIR_HOSTPKG)")
 endef
 
-define Package/python3-six/install
-	$(INSTALL_DIR) $(1)$(PYTHON3_PKG_DIR)
-	$(CP) \
-	    $(PKG_INSTALL_DIR)$(PYTHON3_PKG_DIR)/* \
-	    $(1)$(PYTHON3_PKG_DIR)
-endef
+Host/Install:=
 
+$(eval $(call HostBuild))
+
+$(eval $(call Py3Package,python3-six))
 $(eval $(call BuildPackage,python3-six))
+$(eval $(call BuildPackage,python3-six-src))
