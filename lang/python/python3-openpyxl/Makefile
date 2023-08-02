@@ -16,7 +16,7 @@ PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENCE.rst
 
 PYPI_NAME:=openpyxl
-PKG_HASH:=40f568b9829bf9e446acfffce30250ac1fa39035124d55fc024025c41481c90f
+PKG_MD5SUM:=d4e7a3bd87b5854df49fc60ddd54ecda
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
