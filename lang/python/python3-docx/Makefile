@@ -14,8 +14,6 @@ PKG_RELEASE:=1
 PYPI_NAME:=python-docx
 PKG_MD5SUM:=231baf33ba280d3d751ce50d48872a1e
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/python3-docx-$(PKG_VERSION)
-
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
