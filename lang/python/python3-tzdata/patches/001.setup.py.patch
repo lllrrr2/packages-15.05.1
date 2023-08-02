@@ -1,0 +1,11 @@
+--- a/dev/null
++++ b/setup.py
+@@ -0,0 +1,8 @@
++from setuptools import setup
++
++setup(
++    name='tzdata',
++    version='2023.3',
++    description='Time Zone Database',
++    packages=['tzdata'],
++)
