@@ -47,6 +47,14 @@ A layer must exist above libffi that handles type conversions for values passed
 between the two languages.
 endef
 
+define Package/libffi-dev
+  SECTION:=devel
+  CATEGORY:=Development
+  SUBMENU:=Libraries
+  DEPENDS:=libffi
+  TITLE:=Development files for the libffi library
+endef
+
 HOST_CONFIGURE_ARGS += \
 	--disable-shared \
 	--disable-debug \
@@ -80,13 +88,23 @@ define Build/InstallDev
 endef
 
 define Package/libffi/install
-	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include
-	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib
 	$(CP) \
 		$(PKG_INSTALL_DIR)/usr/lib/libffi.so.* \
 		$(1)/usr/lib/
 	ln -sf libffi.so.8 $(1)/usr/lib/libffi.so
 endef
 
+define Package/libffi-dev/install
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/*.h $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libffi.a $(1)/usr/lib/
+	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
+	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/libffi.pc \
+	  $(1)/usr/lib/pkgconfig/
+endef
+
 $(eval $(call HostBuild))
 $(eval $(call BuildPackage,libffi))
+$(eval $(call BuildPackage,libffi-dev))
