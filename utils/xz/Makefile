@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2013-2015 OpenWrt.org
+# Copyright (C) 2017 Daniel Engberg <daniel.engberg.lists@pyret.net>
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -8,16 +9,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xz
-PKG_VERSION:=5.2.1
-PKG_RELEASE:=2
+PKG_VERSION:=5.2.4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=http://tukaani.org/xz
-PKG_MD5SUM:=d484910b26fec5aff99ee66350589e29
+PKG_SOURCE_URL:=@SF/lzmautils
+PKG_MD5SUM:=b3264b15ab1db04c8c428dc81838d4eb
 
-PKG_LICENSE:=Public-Domain LGPL-2.1+ GPL-2.0+ GPL-3.0+
+PKG_MAINTAINER:=
+PKG_LICENSE:=Public-Domain LGPL-2.1-or-later GPL-2.0-or-later GPL-3.0-or-later
 PKG_LICENSE_FILES:=COPYING
-PKG_MAINTAINER:=Nicolas Thill <nico@openwrt.org>
+PKG_CPE_ID:=cpe:/a:tukaani:xz
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -28,7 +30,7 @@ define Package/xz/Default
   SUBMENU:=Compression
   SECTION:=utils
   CATEGORY:=Utilities
-  URL:=http://tukaani.org/xz
+  URL:=https://tukaani.org/xz
 endef
 
 define Package/xz-utils
@@ -44,7 +46,6 @@ $(call Package/xz/Default)
   DEPENDS:=+libpthread
   TITLE:=liblzma library from XZ Utils
 endef
-
 
 define Package/liblzma-dev
 $(call Package/xz/Default)
@@ -78,16 +79,24 @@ define BuildSubPackage
   $$(eval $$(call BuildPackage,$(1)))
 endef
 
+TARGET_LDFLAGS += -Wl,--gc-sections -flto
 
 CONFIGURE_ARGS += \
 	--enable-small \
 	--enable-assume-ram=4 \
 	--disable-assembler \
+	--disable-debug \
+	--disable-doc \
+	--disable-rpath \
+	--disable-symbol-versions \
 	--disable-werror \
+	--with-pic
 
 # API uses "restrict" keyword introduced in C99 standard
-TARGET_CFLAGS += \
-	-std=c99 \
+TARGET_CFLAGS += -std=c99
+
+CONFIGURE_VARS += \
+	gl_cv_posix_shell=/bin/sh
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
@@ -126,7 +135,6 @@ define Package/liblzma-dev/install
 	  $(1)/usr/lib/pkgconfig/
 endef
 
-
 $(eval $(call BuildPackage,xz-utils))
 $(eval $(call BuildPackage,liblzma))
 $(eval $(call BuildPackage,liblzma-dev))
@@ -134,7 +142,7 @@ $(eval $(call BuildSubPackage,lzmadec, +liblzma,))
 $(eval $(call BuildSubPackage,lzmainfo, +liblzma,))
 $(eval $(call BuildSubPackage,xz, +liblzma, lzcat lzma unlzma unxz xzcat))
 $(eval $(call BuildSubPackage,xzdec, +liblzma,))
-$(eval $(call BuildSubPackage,xzdiff, +bash +xz, lzcmp lzdiff xzcmp))
-$(eval $(call BuildSubPackage,xzgrep, +bash +xz, lzegrep lzfgrep lzgrep xzegrep xzfgrep))
-$(eval $(call BuildSubPackage,xzless, +bash +xz, lzless))
-$(eval $(call BuildSubPackage,xzmore, +bash +xz, lzmore))
+$(eval $(call BuildSubPackage,xzdiff, +xz, lzcmp lzdiff xzcmp))
+$(eval $(call BuildSubPackage,xzgrep, +xz, lzegrep lzfgrep lzgrep xzegrep xzfgrep))
+$(eval $(call BuildSubPackage,xzless, +xz, lzless))
+$(eval $(call BuildSubPackage,xzmore, +xz, lzmore))
