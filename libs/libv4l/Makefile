@@ -6,20 +6,19 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v4l-utils
-PKG_VERSION:=1.16.5
-PKG_RELEASE:=1
+PKG_VERSION:=1.20.0
+PKG_RELEASE:=6
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=https://www.linuxtv.org/downloads/v4l-utils
-PKG_MD5SUM:=de272817133c0dca000a78a5c8c8ec8b
+PKG_MD5SUM:=46f9e2c0b2fdccd009da2f7e1aa87894
 
 PKG_MAINTAINER:=Ted Hess <thess@kitschensync.net>
-PKG_LICENSE:=GPL-2.0 LGPL-2.1
-PKG_LICENSE_FILES:=COPYING COPYING.libv4l
 
 PKG_USE_MIPS16:=0
 PKG_FIXUP:=autoreconf
 PKG_INSTALL:=1
+PKG_BUILD_PARALLEL:=1
 
 PKG_BUILD_DEPENDS:=argp-standalone
 
@@ -53,6 +52,8 @@ define Package/libv4l
   CATEGORY:=Libraries
   TITLE+= wrapper libraries
   DEPENDS := +libpthread +librt $(ICONV_DEPENDS)
+  LICENSE:=LGPL-2.1-or-later
+  LICENSE_FILES:=COPYING.libv4l
 endef
 
 define Package/libv4l/description
@@ -64,7 +65,9 @@ define Package/v4l-utils
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE+= utilities
-  DEPENDS := +libv4l $(CXX_DEPENDS) $(ICONV_DEPENDS)
+  DEPENDS:= +libudev-zero +libv4l $(CXX_DEPENDS) $(ICONV_DEPENDS) $(INTL_DEPENDS)
+  LICENSE:=GPL-2.0-or-later
+  LICENSE_FILES:=COPYING
 endef
 
 define Package/v4l-utils/description
@@ -72,7 +75,8 @@ define Package/v4l-utils/description
   This package contains the video4linux utilities.
 endef
 
-TARGET_CFLAGS += -flto -std=gnu99
+TARGET_CFLAGS += -flto -std=gnu99 -lm
+TARGET_CXXFLAGS += -std=c++11
 TARGET_LDFLAGS += -largp -Wl,--gc-sections
 
 CONFIGURE_ARGS+= \
@@ -81,7 +85,7 @@ CONFIGURE_ARGS+= \
 	--disable-libdvbv5 \
 	--disable-qv4l2 \
 	--disable-qvidcap \
-	--without-jpeg \
+	--without-jpeg
 
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
