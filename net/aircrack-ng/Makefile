@@ -8,18 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=aircrack-ng
-PKG_VERSION:=1.5.2
-PKG_RELEASE:=$(PKG_SOURCE_VERSION)
-PKG_LICENSE:=GPL-2.0
+PKG_VERSION:=1.6
+PKG_RELEASE:=3
+PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:aircrack-ng:aircrack-ng
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/aircrack-ng/aircrack-ng.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=42f2b48d7f46b39e0d5d2f2a64cbf63f87416a70
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.xz
-PKG_MD5SUM:=c8ac3c64b5b186f46fb86abd5e6ae456
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://download.aircrack-ng.org/
+PKG_MD5SUM:=22ddc85549b51ed0da0931d01ef215e5
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -47,10 +44,10 @@ define Package/aircrack-ng
   DEPENDS += +AIRCRACK_NG_OPENSSL:libopenssl
   DEPENDS += +AIRCRACK_NG_GCRYPT:libgcrypt
   DEPENDS += +AIRCRACK_NG_SQLITE3:libsqlite3
-  DEPENDS += +libnl-core +libnl-genl +zlib +usbutils
+  DEPENDS += +libnl-core +libnl-genl +zlib
   TITLE:=WLAN tools (without airmon-ng) for breaking 802.11 WEP/WPA keys
   URL:=https://www.aircrack-ng.org/
-  SUBMENU:=wireless
+  SUBMENU:=Wireless
 endef
 
 define Package/aircrack-ng/description
@@ -64,10 +61,10 @@ endef
 define Package/airmon-ng
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+aircrack-ng +wireless-tools +ethtool +procps-ng +pciutils +CONFIG_USB_SUPPORT:usbutils
+  DEPENDS:=+aircrack-ng +wireless-tools +ethtool +procps-ng +CONFIG_PCI_SUPPORT:pciutils +CONFIG_USB_SUPPORT:usbutils
   TITLE:=Bash script designed to turn wireless cards into monitor mode.
   URL:=http://www.aircrack-ng.org/
-  SUBMENU:=wireless
+  SUBMENU:=Wireless
 endef
 
 define Package/airmon-ng/description
@@ -94,7 +91,7 @@ CONFIGURE_ARGS += \
 	$(if $(CONFIG_AIRCRACK_NG_HWLOC),--enable-hwloc,--disable-hwloc) \
 	$(if $(CONFIG_AIRCRACK_NG_SQLITE3),--with-sqlite3=$(STAGING_DIR)/usr,--without-sqlite3)
 
-TARGET_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections
+TARGET_CFLAGS += -Wall -Wextra -ffunction-sections -fdata-sections -fcommon
 
 ifeq ($(CONFIG_AIRCRACK_NG_OPTIMIZE_SPEED),y)
 	TARGET_CFLAGS := $(filter-out -O%,$(TARGET_CFLAGS)) -O3
