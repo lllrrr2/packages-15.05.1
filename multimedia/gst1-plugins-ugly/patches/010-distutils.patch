@@ -1,11 +1,21 @@
---- a/meson.build
-+++ b/meson.build
-@@ -305,7 +305,7 @@ endif
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,7 +1,7 @@
+ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
  
- gpl_allowed = get_option('gpl').allowed()
- 
--python3 = import('python').find_installation()
-+python3 = 'python3'
- 
- subdir('gst')
- subdir('ext')
+ SUBDIRS = \
+-	gst-libs gst ext docs m4 tests common pkgconfig po
++	gst-libs gst ext docs m4 tests common pkgconfig
+ 	
+ EXTRA_DIST = \
+ 	depcomp \
+--- a/configure.ac
++++ b/configure.ac
+@@ -427,7 +427,6 @@ tests/Makefile
+ tests/check/Makefile
+ tests/files/Makefile
+ m4/Makefile
+-po/Makefile.in
+ pkgconfig/Makefile
+ pkgconfig/gstreamer-plugins-ugly-uninstalled.pc
+ )
