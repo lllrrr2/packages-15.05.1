@@ -1,4 +1,4 @@
-# OpenWrt packages feed
+# OpenWrt packages feed release-2023
 
 ## Description
 
