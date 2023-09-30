@@ -12,7 +12,7 @@ config GST1_LIBAV_PATENTED
 config GET_LIBAV_COMMON_AV_SUPPORT
 	bool "Include support for common audio/video decoders"
 	default y
-	select GST1_LIBAV_DECODER_aac if GST1_LIBAV_PATENTED
+	select GST1_LIBAV_DECODER_aac
 	select GST1_LIBAV_DECODER_ac3
 	select GST1_LIBAV_DECODER_h264 if GST1_LIBAV_PATENTED
 	select GST1_LIBAV_DECODER_atrac3 if GST1_LIBAV_PATENTED
@@ -21,7 +21,7 @@ config GET_LIBAV_COMMON_AV_SUPPORT
 	select GST1_LIBAV_DECODER_mpeg1video
 	select GST1_LIBAV_DECODER_mpeg2video
 	select GST1_LIBAV_DECODER_mpeg4 if GST1_LIBAV_PATENTED
-	select GST1_LIBAV_DECODER_mpeg4aac if GST1_LIBAV_PATENTED
+	select GST1_LIBAV_DECODER_mpeg4aac
 	select GST1_LIBAV_DECODER_mpegvideo
 	select GST1_LIBAV_DECODER_pcm_s16be
 	select GST1_LIBAV_DECODER_pcm_s16le
@@ -29,7 +29,7 @@ config GET_LIBAV_COMMON_AV_SUPPORT
 	select GST1_LIBAV_DECODER_wmav1 if GST1_LIBAV_PATENTED
 	select GST1_LIBAV_DECODER_wmav2 if GST1_LIBAV_PATENTED
 	select GST1_LIBAV_DECODER_png
-	select GST1_LIBAV_PARSER_aac if GST1_LIBAV_PATENTED
+	select GST1_LIBAV_PARSER_aac
 	select GST1_LIBAV_PARSER_h264 if GST1_LIBAV_PATENTED
 	select GST1_LIBAV_PARSER_mpegaudio
 	select GST1_LIBAV_PARSER_mpegvideo
@@ -79,7 +79,6 @@ comment "Decoders ---"
 
 config GST1_LIBAV_DECODER_aac
 	bool "AAC (Advanced Audio Coding)"
-	depends on GST1_LIBAV_PATENTED
 	select GST1_LIBAV_PARSER_aac
 
 config GST1_LIBAV_DECODER_ac3
@@ -121,7 +120,6 @@ config GST1_LIBAV_DECODER_mpeg4
 
 config GST1_LIBAV_DECODER_mpeg4aac
 	bool "MPEG-4 (AAC)"
-	depends on GST1_LIBAV_PATENTED
 
 config GST1_LIBAV_DECODER_pcm_s16be
 	bool "PCM signed 16-bit big-endian"
@@ -228,7 +226,6 @@ comment "Parsers ---"
 
 config GST1_LIBAV_PARSER_aac
 	bool "AAC (Advanced Audio Coding)"
-	depends on GST1_LIBAV_PATENTED
 
 config GST1_LIBAV_PARSER_ac3
 	bool "AC3"
