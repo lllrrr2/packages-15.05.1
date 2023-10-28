@@ -8,15 +8,15 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=aircrack-ng
-PKG_VERSION:=1.6
-PKG_RELEASE:=3
+PKG_VERSION:=1.7
+PKG_RELEASE:=1
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 PKG_CPE_ID:=cpe:/a:aircrack-ng:aircrack-ng
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://download.aircrack-ng.org/
-PKG_MD5SUM:=22ddc85549b51ed0da0931d01ef215e5
+PKG_MD5SUM:=a918ea7146f91d8c799fb770c38f4bec
 
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
@@ -40,7 +40,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/aircrack-ng
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+AIRCRACK_NG_HWLOC:libhwloc +libpcap +libpcre +libpthread $(CXX_DEPENDS)
+  DEPENDS:=+AIRCRACK_NG_HWLOC:libhwloc +libpcap +libpcre2 +libpthread $(CXX_DEPENDS)
   DEPENDS += +AIRCRACK_NG_OPENSSL:libopenssl
   DEPENDS += +AIRCRACK_NG_GCRYPT:libgcrypt
   DEPENDS += +AIRCRACK_NG_SQLITE3:libsqlite3
