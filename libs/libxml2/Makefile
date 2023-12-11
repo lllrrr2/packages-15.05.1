@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=libxml2
-PKG_VERSION:=2.9.14
+PKG_VERSION:=2.9.9
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_SOURCE_URL:=@GNOME/libxml2/$(basename $(PKG_VERSION))
-PKG_MD5SUM:=b7b3029ac6beb32a7925225515f83ca3
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=http://xmlsoft.org/sources/
+PKG_MD5SUM:=c04a5a0a042eaa157e8e8c9eabe76bd6
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYING
@@ -177,9 +177,6 @@ define Package/libxml2-dev/install
 
 	$(INSTALL_DIR) $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
-
-	$(INSTALL_DIR) $(1)/usr/lib
-	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libxml2.so $(1)/usr/lib/
 
 	$(INSTALL_DIR) $(1)/usr/lib/{cmake,pkgconfig}
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/{cmake,pkgconfig} $(1)/usr/lib/
