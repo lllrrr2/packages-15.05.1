@@ -1,0 +1,19 @@
+--- a/libflashrom.c
++++ b/libflashrom.c
+@@ -33,6 +33,16 @@
+ #include "ich_descriptors.h"
+ #include "libflashrom.h"
+ 
++char *strndup(const char *s, size_t n) {
++    char *p = malloc(n + 1);
++    if (p == NULL) {
++        return NULL;
++    }
++    strncpy(p, s, n);
++    p[n] = '\0';
++    return p;
++}
++
+ /**
+  * @defgroup flashrom-general General
+  * @{
