@@ -15,7 +15,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:= \
 	http://xmlsoft.org/sources/ \
 	ftp://fr.rpmfind.net/pub/libxml/
-PKG_HASH:=98b1bd46d6792925ad2dfe9a87452ea2adebf69dcb9919ffd55bf926a7f93f7f
+PKG_MD5SUM:=db8765c8d076f1b6caafd9f2542a304a
 
 PKG_MAINTAINER:=Jiri Slachta <jiri@slachta.eu>
 PKG_LICENSE:=MIT
@@ -78,7 +78,7 @@ CONFIGURE_ARGS += \
 	--without-plugins
 
 HOST_CONFIGURE_ARGS += \
-	--with-libxml-prefix=$(STAGING_DIR_HOSTPKG) \
+	--with-libxml-prefix=$(STAGING_DIR_HOST) \
 	--without-python \
 	--without-crypto \
 	--without-debug \
