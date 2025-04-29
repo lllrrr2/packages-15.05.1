@@ -44,7 +44,7 @@ define Package/aircrack-ng
   DEPENDS += +AIRCRACK_NG_OPENSSL:libopenssl
   DEPENDS += +AIRCRACK_NG_GCRYPT:libgcrypt
   DEPENDS += +AIRCRACK_NG_SQLITE3:libsqlite3
-  DEPENDS += +libnl-core +libnl-genl +zlib +libbsd
+  DEPENDS += +libnl-core +libnl-genl +zlib +libbsd +mount-utils
   TITLE:=WLAN tools (without airmon-ng) for breaking 802.11 WEP/WPA keys
   URL:=https://www.aircrack-ng.org/
   SUBMENU:=Wireless
@@ -61,7 +61,7 @@ endef
 define Package/airmon-ng
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+aircrack-ng +wireless-tools +ethtool +procps-ng +CONFIG_PCI_SUPPORT:pciutils +CONFIG_USB_SUPPORT:usbutils
+  DEPENDS:=+aircrack-ng +wireless-tools +ethtool +procps-ng +pciutils +usbutils
   TITLE:=Bash script designed to turn wireless cards into monitor mode.
   URL:=http://www.aircrack-ng.org/
   SUBMENU:=Wireless
