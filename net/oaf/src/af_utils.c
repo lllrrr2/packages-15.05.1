@@ -20,6 +20,45 @@ u_int32_t af_get_timestamp_sec(void)
 
 }
 
+int k_atoi(const char *str) {
+    int result = 0;
+
+    // Skip whitespace
+    while (*str == ' ' || *str == '\t') {
+        str++;
+    }
+
+    // Convert characters to integer
+    while (*str >= '0' && *str <= '9') {
+        result = result * 10 + (*str - '0');
+        str++;
+    }
+
+    return result;
+}
+
+char *k_trim(char *s)
+{
+	char *start, *last, *bk;
+	int len;
+
+	start = s;
+	while (isspace(*start))
+		start++;
+
+	bk = last = s + strlen(s) - 1;
+	while (last > start && isspace(*last))
+		last--;
+
+	if ((s != start) || (bk != last))
+	{
+		len = last - start + 1;
+		strncpy(s, start, len);
+		s[len] = '\0';
+	}
+	return s;
+}
+
 int check_local_network_ip(unsigned int ip)
 {
 	if ((ip & 0xffff0000) == 0xc0a80000)
@@ -36,7 +75,6 @@ void dump_str(char *name, unsigned char *p, int len)
 {
 	#define MAX_DUMP_STR_LEN 64
 	char buf[MAX_DUMP_STR_LEN] = {0};
-	int i;
 	if (len > MAX_DUMP_STR_LEN) {
 		len = MAX_DUMP_STR_LEN - 1;
 	}
@@ -44,6 +82,41 @@ void dump_str(char *name, unsigned char *p, int len)
 	strncpy(buf, p, len);
 	printk("[%s]\n", buf);
 }
+int isprint_char(unsigned char c)
+{
+    if (c >= 0x20 && c <= 0x7e)
+        return 1;
+    else
+        return 0;
+}
+
+void print_hex_ascii(const unsigned char *data, size_t size) {
+    size_t i, j;
+
+    for (i = 0; i < size; i += 16) {
+        printk(KERN_CONT"%08lx  ", (unsigned long)i);
+        for (j = 0; j < 16; ++j) {
+            if (i + j < size) {
+                printk(KERN_CONT"%02x ", data[i + j]);
+            } else {
+                printk(KERN_CONT"   "); 
+            }   
+        }   
+
+        printk(KERN_CONT" ");
+
+        for (j = 0; j < 16; ++j) {
+            if (i + j < size) {
+                unsigned char c = data[i + j]; 
+                printk(KERN_CONT"%c", isprint_char(c) ? c : '.'); 
+            }   
+        }   
+
+        printk(KERN_CONT"\n");
+    }   
+    printk(KERN_CONT"---------------------------------------\n");
+}
+
 
 void dump_hex(char *name, unsigned char *p, int len)
 {
@@ -55,10 +128,10 @@ void dump_hex(char *name, unsigned char *p, int len)
 	printk("%s: ",name);
 	for (i = 0; i < len; i++) {
 		if (i % 16 == 0)
-			printk("\n");
-		printk("%02X ",*(p + i));
+			printk(KERN_CONT "\n");
+		printk(KERN_CONT "%02X ",*(p + i));
 	}
-	printk("\n");
+	printk(KERN_CONT "\n");
 }
 
 #ifndef va_arg
