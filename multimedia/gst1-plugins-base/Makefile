@@ -150,10 +150,6 @@ CONFIGURE_ARGS += \
 	--disable-subparse \
 	$(call GST_COND_SELECT,tcp) \
 	$(call GST_COND_SELECT,theora) \
-	$(call GST_COND_SELECT,videorate) \
-	$(call GST_COND_SELECT,videoscale) \
-	$(call GST_COND_SELECT,videoconvert) \
-	$(call GST_COND_SELECT,videotestsrc) \
 	$(call GST_COND_SELECT,volume) \
 	$(call GST_COND_SELECT,vorbis) \
 	--disable-x \
@@ -291,15 +287,12 @@ $(eval $(call GstBuildPlugin,audioresample,audio resampling,audio tag,,))
 $(eval $(call GstBuildPlugin,audiotestsrc,audio test,audio tag controller,,))
 $(eval $(call GstBuildPlugin,playback,media decoder (v2),pbutils,,))
 $(eval $(call GstBuildPlugin,gio,GIO,,,))
-$(eval $(call GstBuildPlugin,ogg,Ogg,riff tag pbutils video,,+libogg))
 $(eval $(call GstBuildPlugin,opus,OPUS plugin library,pbutils video,,+libopus))
 $(eval $(call GstBuildPlugin,tcp,TCP,net,,))
-$(eval $(call GstBuildPlugin,theora,Theora,tag video,,+libogg +libtheora))
 $(eval $(call GstBuildPlugin,typefindfunctions,'typefind' functions,audio pbutils tag video,,))
 $(eval $(call GstBuildPlugin,videoconvert,video format conversion,video,,))
 $(eval $(call GstBuildPlugin,videorate,Adjusts video frames,video,,))
 $(eval $(call GstBuildPlugin,videoscale,Resizes video,video,,))
-$(eval $(call GstBuildPlugin,videotestsrc,video test,video,,+liboil))
 $(eval $(call GstBuildPlugin,volume,volume,audio controller,,+liboil))
 $(eval $(call GstBuildPlugin,vorbis,Vorbis,audio tag,ogg,+libvorbis))
 

@@ -24,7 +24,6 @@ PKG_SOURCE_URL:=https://gstreamer.freedesktop.org/src/gst-plugins-good/
 PKG_MD5SUM:=c79b6c2f8eaadb2bb66615b694db399e
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_PACKAGE_gst1-mod-lame \
 	CONFIG_PACKAGE_gst1-mod-mpg123 \
 
 PKG_FIXUP:=autoreconf
@@ -99,8 +98,7 @@ GST_COND_SELECT = $(patsubst %,$(if $(CONFIG_PACKAGE_gst1-mod-$(1)),--enable,--d
 GST_VERSION:=1.0
 
 CONFIGURE_ARGS += \
-	$(call GST_COND_SELECT,lame) \
-        $(call GST_COND_SELECT,mpg123) \
+    $(call GST_COND_SELECT,mpg123) \
 	\
 	--disable-Bsymbolic \
 	--disable-debug \
@@ -186,14 +184,11 @@ endef
 
 #$(eval $(call GstBuildPlugin,1394,IEEE 1394 support,,,))
 $(eval $(call GstBuildPlugin,alaw,alaw codec,audio,,))
-$(eval $(call GstBuildPlugin,alpha,alpha support,video,,))
-$(eval $(call GstBuildPlugin,alphacolor,alphacolor support,video,,))
 $(eval $(call GstBuildPlugin,apetag,apetag support,audio pbutils tag video,,))
 $(eval $(call GstBuildPlugin,audiofx,audio effects,audio fft controller,,))
 $(eval $(call GstBuildPlugin,audioparsers,audioparsers,audio tag pbutils,,))
 $(eval $(call GstBuildPlugin,auparse,auparse,audio tag pbutils,,))
 $(eval $(call GstBuildPlugin,autodetect,format auto-detection,,,))
-$(eval $(call GstBuildPlugin,avi,avi support,audio riff tag video,,))
 $(eval $(call GstBuildPlugin,cutter,audio cutter,audio,,))
 $(eval $(call GstBuildPlugin,debug,debugging,,,))
 $(eval $(call GstBuildPlugin,deinterlace,deinterlace support,video,,))
@@ -214,14 +209,12 @@ $(eval $(call GstBuildPlugin,interleave,audio interleave,audio,,))
 $(eval $(call GstBuildPlugin,isomp4,isomp4 support,audio pbutils riff rtp tag video,,))
 #$(eval $(call GstBuildPlugin,jack,jack support,audio,,))
 $(eval $(call GstBuildPlugin,jpeg,jpeg support,video,,+libjpeg-turbo))
-$(eval $(call GstBuildPlugin,lame,MP3 encoder (using LAME),audio,,+lame-lib))
 $(eval $(call GstBuildPlugin,level,audio level,audio,,))
 $(eval $(call GstBuildPlugin,matroska,matroska support,audio pbutils riff tag video,,))
 $(eval $(call GstBuildPlugin,mpg123,MP3 decoder (using mpg123),audio tag,,+libid3tag +mpg123))
 $(eval $(call GstBuildPlugin,mulaw,mulaw support,audio,,))
 $(eval $(call GstBuildPlugin,multifile,multiple files access,video,,))
 $(eval $(call GstBuildPlugin,multipart,multipart stream handling,,,))
-$(eval $(call GstBuildPlugin,navigationtest,navigationtest support,video,,))
 $(eval $(call GstBuildPlugin,oss4,OSS 4 audio support,audio tag,,))
 $(eval $(call GstBuildPlugin,ossaudio,OSS audio support,audio,,))
 $(eval $(call GstBuildPlugin,png,png support,video,,+libpng))
@@ -230,21 +223,13 @@ $(eval $(call GstBuildPlugin,replaygain,volume normalization,pbutils,,))
 $(eval $(call GstBuildPlugin,rtpmanager,RTP manager,audio net rtp tag pbutils video,,))
 $(eval $(call GstBuildPlugin,rtp,RTP,audio rtp tag pbutils video,,))
 $(eval $(call GstBuildPlugin,rtsp,RTSP,net rtp rtsp sdp,,))
-$(eval $(call GstBuildPlugin,shapewipe,shapewipe support,video,,))
 #$(eval $(call GstBuildPlugin,shout2,shout2 support,,,))
-$(eval $(call GstBuildPlugin,smpte,smpte support,video,,))
 $(eval $(call GstBuildPlugin,soup,soup input,audio tag,,+libsoup))
 $(eval $(call GstBuildPlugin,spectrum,spectrum data output,audio fft,,))
 #$(eval $(call GstBuildPlugin,speex,speex support,audio tag,,))
 #$(eval $(call GstBuildPlugin,sty4menc,sty4menc support,video,,))
 #$(eval $(call GstBuildPlugin,taglib,taglib support,tag,,))
 $(eval $(call GstBuildPlugin,udp,UDP,net,,))
-$(eval $(call GstBuildPlugin,video4linux2,video4linux2 support,video allocators,,+libv4l))
-$(eval $(call GstBuildPlugin,videobox,videobox support,video,,))
-$(eval $(call GstBuildPlugin,videocrop,videocrop support,video,,))
-$(eval $(call GstBuildPlugin,videofilter,videofilter support,video,,))
-$(eval $(call GstBuildPlugin,videomixer,videomixer support,video,,))
-$(eval $(call GstBuildPlugin,vpx,vpx support,tag video,,+libvpx))
 $(eval $(call GstBuildPlugin,wavenc,Wav encoder,riff,,))
 #$(eval $(call GstBuildPlugin,wavpack,Wav packer,audio riff tag,,))
 $(eval $(call GstBuildPlugin,wavparse,Wav parser,audio riff tag,,))
