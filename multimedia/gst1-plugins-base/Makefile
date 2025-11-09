@@ -31,13 +31,8 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_gst1-mod-audioresample \
 	CONFIG_PACKAGE_gst1-mod-audiotestsrc \
 	CONFIG_PACKAGE_gst1-mod-gio \
-	CONFIG_PACKAGE_gst1-mod-ogg \
 	CONFIG_PACKAGE_gst1-mod-tcp \
-	CONFIG_PACKAGE_gst1-mod-theora \
-	CONFIG_PACKAGE_gst1-mod-videoconvert \
-	CONFIG_PACKAGE_gst1-mod-videotestsrc \
 	CONFIG_PACKAGE_gst1-mod-volume \
-	CONFIG_PACKAGE_gst1-mod-vorbis \
 	CONFIG_PACKAGE_libgst1app \
 
 PKG_FIXUP:=autoreconf
@@ -145,13 +140,10 @@ CONFIGURE_ARGS += \
 	--disable-cdparanoia \
 	$(call GST_COND_SELECT,gio) \
 	--disable-libvisual \
-	$(call GST_COND_SELECT,ogg) \
 	--disable-pango \
 	--disable-subparse \
 	$(call GST_COND_SELECT,tcp) \
-	$(call GST_COND_SELECT,theora) \
 	$(call GST_COND_SELECT,volume) \
-	$(call GST_COND_SELECT,vorbis) \
 	--disable-x \
 	--disable-xshm \
 	--disable-xvideo \
@@ -286,15 +278,9 @@ $(eval $(call GstBuildPlugin,audiorate,audio rate adjusting,audio tag,,))
 $(eval $(call GstBuildPlugin,audioresample,audio resampling,audio tag,,))
 $(eval $(call GstBuildPlugin,audiotestsrc,audio test,audio tag controller,,))
 $(eval $(call GstBuildPlugin,playback,media decoder (v2),pbutils,,))
-$(eval $(call GstBuildPlugin,gio,GIO,,,))
-$(eval $(call GstBuildPlugin,opus,OPUS plugin library,pbutils video,,+libopus))
 $(eval $(call GstBuildPlugin,tcp,TCP,net,,))
 $(eval $(call GstBuildPlugin,typefindfunctions,'typefind' functions,audio pbutils tag video,,))
-$(eval $(call GstBuildPlugin,videoconvert,video format conversion,video,,))
-$(eval $(call GstBuildPlugin,videorate,Adjusts video frames,video,,))
-$(eval $(call GstBuildPlugin,videoscale,Resizes video,video,,))
 $(eval $(call GstBuildPlugin,volume,volume,audio controller,,+liboil))
-$(eval $(call GstBuildPlugin,vorbis,Vorbis,audio tag,ogg,+libvorbis))
 
 $(eval $(call BuildPackage,gstreamer1-plugins-base))
 $(eval $(call BuildPackage,gst1-plugins-base))
