@@ -38,6 +38,13 @@ endef
 #define Build/Configure
 #endef
 
+# Copy the adb pair support sources (SPAKE2 + pairing client) into the
+# android 5.0.2 adb tree before compiling.
+define Build/Prepare
+	$(call Build/Prepare/Default)
+	$(CP) $(CURDIR)/src/*.c $(CURDIR)/src/*.h $(PKG_BUILD_DIR)/adb/
+endef
+
 define Build/Compile
 	+$(MAKE) -C $(PKG_BUILD_DIR)/adb/ \
 		CROSS_COMPILE="$(KERNEL_CROSS)" \
